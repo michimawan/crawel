@@ -17,7 +17,7 @@
                 </tr>
             </thead>
             <tbody>
-            @foreach($crawler as $item)
+            @foreach($stories as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $item->project_name }}</td>

@@ -12,6 +12,6 @@
 */
 
 Route::get('/', [
-	'as' => 'crawler',
+	'as' => 'crawler.index',
 	'uses' => 'CrawlersController@index'
 ]);

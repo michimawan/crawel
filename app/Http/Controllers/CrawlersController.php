@@ -29,6 +29,6 @@ class CrawlersController extends Controller
 
 		$crawler = Crawler::all();
 
-		return view('crawler.index', ['crawler' => $crawler]);
+		return view('crawler.index', ['stories' => $crawler]);
 	}
 }
