@@ -2,33 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 use Curl\Curl;
 
-use App\Http\Requests;
 use App\Crawler;
-use Log;
 
 class CrawlersController extends Controller
 {
 	public function index()
 	{
-		// $apiToken = '908cac5d19393bb1cf91fa8ea6c0335f';
-		// $projectId = '828039';
-		// $baseUrl = "https://www.pivotaltracker.com/services/v5/projects/{$projectId}/stories?";
+		$stories = $this->getStories();
+		$projectData = $this->getProjectData();
 
-		// $filter = "filter=type%3Achore";
-		// $limit = "&limit=10";
+		return view('crawler.index', [
+			'stories' => $stories,
+			'project' => $projectData
+		]);
+	}
 
-		// $curl = new Curl;
-		// $curl->setHeader('X-TrackerToken', $apiToken);
-		// $result = $curl->get($baseUrl . $filter . $limit);
-		// print_r($curl->response);
-		// die();
+	private function getStories()
+	{
+		$apiToken = '';
+		$projectId = '';
+		$baseUrl = "https://www.pivotaltracker.com/services/v5/projects/{$projectId}/stories?";
 
-		$crawler = Crawler::all();
+		$limit = "&limit=10";
+		$state = "&with_state=unstarted";
+		$buildedFilter = $limit . $state;
 
-		return view('crawler.index', ['stories' => $crawler]);
+		$curl = new Curl;
+		$curl->setHeader('X-TrackerToken', $apiToken);
+		$curl->get($baseUrl . $buildedFilter);
+
+		return json_decode($curl->response);
+	}
+
+	private function getProjectData()
+	{
+		$apiToken = '';
+		$projectId = '';
+		$url = "https://www.pivotaltracker.com/services/v5/projects/{$projectId}";
+
+		$curl = new Curl;
+		$curl->setHeader('X-TrackerToken', $apiToken);
+		$curl->get($url);
+
+		return json_decode($curl->response);
+
 	}
 }
