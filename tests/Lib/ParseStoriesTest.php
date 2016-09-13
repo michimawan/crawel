@@ -1,7 +1,7 @@
 <?php
 use App\Lib\ParseStories;
 
-class ParseStoriesTest extends TestCase
+class ParseStoriesTest extends BaseLibTest
 {
     public function test_parse_found_match()
     {
@@ -16,6 +16,7 @@ class ParseStoriesTest extends TestCase
 [ref #1234] foo
 [finished #12345] foo
 [#123456] foo
+[#123456adfa] foo
 STRING;
         $expected = [
             123, 1234, 12345, 123456

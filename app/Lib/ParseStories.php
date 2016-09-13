@@ -6,7 +6,7 @@ class ParseStories
 {
 	public function parse(string $textToParse = '')
 	{
-		$pattern = '/#(?P<id>\d+)/i';
+		$pattern = '/#(?P<id>\d+)\]/i';
 		$matches = [];
 		$ids = [];
 

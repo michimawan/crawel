@@ -1,7 +1,11 @@
 <?php
 
+use Illuminate\Foundation\Testing\DatabaseTransactions;
+
 class BaseRouteTest extends TestCase
 {
+    use DatabaseTransactions;
+
     public function assertRoutesTo($response, $controllerAndAction, $expectedRouteInputs = []) {
         foreach ($expectedRouteInputs as $inputKey => $inputValue) {
             $this->assertEquals($inputValue, Route::input($inputKey));

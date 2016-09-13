@@ -15,12 +15,14 @@ class CreateTableCrawler extends Migration
     {
         Schema::create('crawlers', function(Blueprint $table) {
             $table->increments('id');
-            $table->text('pivotal_id');
-            $table->text('title');
-            $table->integer('point');
-            $table->text('project_name');
-            $table->text('story_type');
+            $table->integer('pivotal_id');
+            $table->text('title')->nullable();
+            $table->integer('point')->default(0);
+            $table->text('project_name')->nullable();
+            $table->text('story_type')->nullable();
             $table->timestamps();
+
+            $table->unique('pivotal_id');
         });
     }
 

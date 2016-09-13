@@ -15,3 +15,13 @@ Route::get('/', [
 	'as' => 'crawler.index',
 	'uses' => 'CrawlersController@index'
 ]);
+
+Route::get('/create', [
+	'as' => 'crawler.create',
+	'uses' => 'CrawlersController@create'
+]);
+
+Route::post('/store', [
+	'as' => 'crawler.store',
+	'uses' => 'CrawlersController@store'
+]);

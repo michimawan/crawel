@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Curl\Curl;
+use Illuminate\Http\Request;
 
 use App\Crawler;
+use App\Lib\ParseStories;
 
 class CrawlersController extends Controller
 {
@@ -48,5 +50,20 @@ class CrawlersController extends Controller
 
 		return json_decode($curl->response);
 
+	}
+
+	public function create()
+	{
+        return view('crawler.create');
+	}
+
+	public function store(Request $request)
+	{
+		$stories = $request->input('stories');
+		$parseStories = new ParseStories();
+		$ids = $parseStories->parse($stories);
+		print_r($ids);
+		die();
+		
 	}
 }
