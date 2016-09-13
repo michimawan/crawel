@@ -28,9 +28,10 @@ class CrawlerControllerTest extends BaseControllerTest
         $response = $this->get($route, [])->response;
         $this->assertResponseOk();
         $this->assertEquals('crawler.create', $response->original->getName());
+        $this->assertViewHas(['options']);
     }
 
-    public function test_store_success()
+    public function xtest_store_success()
     {
     	$text = ['stories' => '[#211123] foo'];
         $path = route('crawler.store');

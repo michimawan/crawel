@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Crawler;
 use App\Lib\ParseStories;
+use App\Lib\Curler;
+use Config;
 
 class CrawlersController extends Controller
 {
@@ -54,16 +56,25 @@ class CrawlersController extends Controller
 
 	public function create()
 	{
-        return view('crawler.create');
+		$project = Config::get('pivotal.projects');
+		$option = [];
+		foreach($project as $key => $p) {
+			$option[$key] = $key;
+		}
+        return view('crawler.create', [
+        	'options' => $option
+        ]);
 	}
 
 	public function store(Request $request)
 	{
 		$stories = $request->input('stories');
-		$parseStories = new ParseStories();
-		$ids = $parseStories->parse($stories);
-		print_r($ids);
-		die();
+		$project = $request->input('project');
+		$curl = new Curl;
+		$curl->setHeader('X-TrackerToken', Config::get('pivotal.apiToken'));
+
+		$ids = (new ParseStories())->parse($stories);
+		$responses = (new Curler())->curl($project, $ids, $curl);
 		
 	}
 }
