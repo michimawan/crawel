@@ -5,53 +5,23 @@ namespace App\Http\Controllers;
 use Curl\Curl;
 use Illuminate\Http\Request;
 
-use App\Crawler;
+use App\Lib\CrawlerRepository;
 use App\Lib\ParseStories;
 use App\Lib\Curler;
+use App\Crawler;
 use Config;
 
 class CrawlersController extends Controller
 {
 	public function index()
 	{
-		$stories = $this->getStories();
-		$projectData = $this->getProjectData();
+		$stories = [];
+		$projectData = [];
 
 		return view('crawler.index', [
 			'stories' => $stories,
 			'project' => $projectData
 		]);
-	}
-
-	private function getStories()
-	{
-		$apiToken = '';
-		$projectId = '';
-		$baseUrl = "https://www.pivotaltracker.com/services/v5/projects/{$projectId}/stories?";
-
-		$limit = "&limit=10";
-		$state = "&with_state=unstarted";
-		$buildedFilter = $limit . $state;
-
-		$curl = new Curl;
-		$curl->setHeader('X-TrackerToken', $apiToken);
-		$curl->get($baseUrl . $buildedFilter);
-
-		return json_decode($curl->response);
-	}
-
-	private function getProjectData()
-	{
-		$apiToken = '';
-		$projectId = '';
-		$url = "https://www.pivotaltracker.com/services/v5/projects/{$projectId}";
-
-		$curl = new Curl;
-		$curl->setHeader('X-TrackerToken', $apiToken);
-		$curl->get($url);
-
-		return json_decode($curl->response);
-
 	}
 
 	public function create()
@@ -75,6 +45,8 @@ class CrawlersController extends Controller
 
 		$ids = (new ParseStories())->parse($stories);
 		$responses = (new Curler())->curl($project, $ids, $curl);
-		
+		(new CrawlerRepository())->store($responses);
+		// hit excel
+		// redirect ke index
 	}
 }

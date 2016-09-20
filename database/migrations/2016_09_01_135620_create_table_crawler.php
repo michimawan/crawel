@@ -18,8 +18,9 @@ class CreateTableCrawler extends Migration
             $table->integer('pivotal_id');
             $table->text('title')->nullable();
             $table->integer('point')->default(0);
-            $table->text('project_name')->nullable();
+            $table->integer('project_id');
             $table->text('story_type')->nullable();
+            $table->text('last_updated_at');
             $table->timestamps();
 
             $table->unique('pivotal_id');

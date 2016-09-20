@@ -2,13 +2,11 @@
 return [
 	'projects' => [
 		'foo' => [
-			'projectIds' => [222, 333, 344]
-		],
-		'bar' => [
-			'projectIds' => [222, 333, 344]
-		],
-		'bibib' => [
-			'projectIds' => [222, 333, 344]
+			'projectIds' => [
+				'foo-1' => 222,
+				'foo-2' => 333,
+				'foo-3' => 344
+			]
 		],
 	],
 	'apiToken' => ''

@@ -6,7 +6,7 @@ use Config;
 class Curler
 {
 
-	public function curl($project, $ids, $curl)
+	public function curl($project = '', $ids = [], $curl) : array
 	{
 		$projectIds = $this->getProjectIds($project);
 
@@ -17,18 +17,28 @@ class Curler
 		return $responses;
 	}
 
-	public function fetchData($projectId, $ids, $curl)
+	public function fetchData($projectId = null, $ids = [], $curl) : array
 	{
+		if (is_null($projectId) || count($ids) == 0) {
+			return [];
+		}
+
 		$baseUrl = "https://www.pivotaltracker.com/services/v5/projects/{$projectId}/stories/bulk?";
 		$encodedId = urlencode(join(',', $ids));
 		$url = $baseUrl . "ids={$encodedId}";
 		$curl->get($url);
 
-		return json_decode($curl->response);
+		$responses = json_decode($curl->response);
+		if (isset($responses->kind) && $responses->kind == 'error') {
+			return [];
+		}
+
+		return $responses;
 	}
 
-	public function getProjectIds($project)
+	public function getProjectIds($project = '') : array
 	{
-		return Config::get("pivotal.projects.{$project}.projectIds");
+		$projectIds = Config::get("pivotal.projects.{$project}.projectIds");
+		return is_null($projectIds) ? [] : array_values($projectIds);
 	}
 }
