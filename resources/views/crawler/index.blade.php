@@ -18,14 +18,6 @@
             </thead>
             <tbody>
             @foreach($stories as $item)
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ "[#" . $item->id . "]"}}</td>
-                    <td>{{ $project->name }}</td>
-                    <td>{{ $item->name }}</td>
-                    <td>{{ $item->story_type == 'feature' ? $item->estimate : 0 }}</td>
-                    <td>{{ $item->story_type }}</td>
-                </tr>
             @endforeach
             </tbody>
         </table>

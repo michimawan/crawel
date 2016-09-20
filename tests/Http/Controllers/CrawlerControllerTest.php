@@ -1,25 +1,29 @@
 <?php
 
 use Curl\Curl;
+use App\Crawler;
+use Carbon\Carbon;
 
 class CrawlerControllerTest extends BaseControllerTest
 {
-    public function xtest_index()
+    public function test_index()
     {
+        $yesterdayDatas = factory(Crawler::class, 3)->create([
+            'updated_at' => Carbon::today()->subDay(),
+        ]);
+
+        $todayDatas = factory(Crawler::class, 3)->create();
+        $todayDataIds = $todayDatas->pluck('id')->all();
+        $projectInfo = Config::get('pivotal.projects');
+
         $route = route('crawler.index');
         $response = $this->get($route, [])->response;
 
-        // $curl = $this->getMockBuilder(Curl::class)
-        // 	->setMethods(['setHeader'])
-        // 	->getMock();
-
-        // $curl->expects($this->once())
-        // 	->method('setHeader')
-        // 	->with('X-TrackerToken', 'foo');
-
         $this->assertResponseOk();
         $this->assertEquals('crawler.index', $response->original->getName());
-        $this->assertViewHas(['stories']);
+        $this->assertViewHas(['stories', 'projectInfo']);
+        $this->assertEquals($todayDataIds, $response->original->stories->pluck('id')->all());
+        $this->assertEquals($projectInfo, $response->original->projectInfo);
     }
 
     public function test_create()
