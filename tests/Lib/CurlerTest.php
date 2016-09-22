@@ -183,7 +183,7 @@ class CurlerTest extends BaseLibTest
 
 	public function test_getProjectIds()
 	{
-		$expected = array_values(Config::get('pivotal.projects.foo.projectIds'));
+		$expected = array_values(Config::get('pivotal.projects.foo'));
 
 		$this->assertEquals($expected, (new Curler)->getProjectIds('foo'));
 	}

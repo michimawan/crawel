@@ -6,7 +6,7 @@ use Curl\Curl;
 use Illuminate\Http\Request;
 
 use App\Lib\CrawlerRepository;
-use App\Lib\ParseStories;
+use App\Lib\Parser;
 use App\Lib\Curler;
 use Carbon\Carbon;
 use App\Crawler;
@@ -16,12 +16,15 @@ class CrawlersController extends Controller
 {
 	public function index()
 	{
-		$projectInfo = Config::get('pivotal.projects');
-		$stories = Crawler::where('updated_at', '>', Carbon::today())->get();
+		$projects = Config::get('pivotal.projects');
+		$projects = (new Parser)->reverseProjectIds($projects);
+		$stories = Crawler::where('updated_at', '>=', Carbon::today())->get();
+
+		$stories = (new Parser)->grouping($projects, $stories);
 
 		return view('crawler.index', [
 			'stories' => $stories,
-			'projectInfo' => $projectInfo
+			'projects' => $projects,
 		]);
 	}
 
@@ -44,10 +47,10 @@ class CrawlersController extends Controller
 		$curl = new Curl;
 		$curl->setHeader('X-TrackerToken', Config::get('pivotal.apiToken'));
 
-		$ids = (new ParseStories())->parse($stories);
+		$ids = (new Parser())->parse($stories);
 		$responses = (new Curler())->curl($project, $ids, $curl);
 		(new CrawlerRepository())->store($responses);
 		// hit excel
-		// redirect ke index
+		return redirect()->route('crawler.index');
 	}
 }

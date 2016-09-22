@@ -38,7 +38,7 @@ class Curler
 
 	public function getProjectIds($project = '') : array
 	{
-		$projectIds = Config::get("pivotal.projects.{$project}.projectIds");
+		$projectIds = Config::get("pivotal.projects.{$project}");
 		return is_null($projectIds) ? [] : array_values($projectIds);
 	}
 }
