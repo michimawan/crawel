@@ -9,7 +9,8 @@
         "laravel/framework": "5.3.*",
         "laravelcollective/html": "^5.3",
         "appzcoder/crud-generator": "^1.2",
-        "curl/curl": "^1.4"
+        "curl/curl": "^1.4",
+        "google/apiclient": "^2.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
