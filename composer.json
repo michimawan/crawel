@@ -33,6 +33,9 @@
             "tests/routes/BaseRouteTest.php",
             "tests/Lib/BaseLibTest.php",
             "tests/Http/Controllers/BaseControllerTest.php"
+        ],
+        "files": [
+          "bootstrap/helpers.php"
         ]
     },
     "scripts": {
