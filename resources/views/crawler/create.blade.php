@@ -1,22 +1,29 @@
+@extends('layouts.app')
+
+@section('content')
 {!! Form::open([
 	'route' => 'crawler.store',
 	'method' => 'POST',
 	'class' => '']) !!}
-<div class="form-group">
-  {!! Form::label('project', 'Project', ['class' => '']) !!}
-  <div class="col-sm-10">
-    {!! Form::select('project', $options, ['class' => 'form-control']) !!}
+<div class="container">
+  <div class="form-group">
+    <div class="col-sm-10">
+      {!! Form::label('project', 'Choose Input Project', ['class' => '']) !!}
+      {!! Form::select('project', $options, ['class' => 'form-control']) !!}
+    </div>
   </div>
-</div>
-<div class="form-group">
-  {!! Form::label('stories', 'Stories', ['class' => '']) !!}
-  <div class="col-sm-10">
-    {!! Form::textarea('stories', '', ['class' => '']) !!}
+
+  <div class="form-group">
+    <div class="col-sm-10">
+      <!-- {!! Form::label('stories', 'Stories', ['class' => '']) !!} -->
+      {!! Form::textarea('stories', '', ['class' => '']) !!}
+    </div>
   </div>
-</div>
-<div class="form-group">
-  <div class="col-sm-10 col-sm-offset-2">
-    {!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
+
+  <div class="form-group">
+    <div class="col-sm-10">
+      {!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
+    </div>
   </div>
-</div>
 {!! Form::close() !!}
+@endsection

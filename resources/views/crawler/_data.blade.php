@@ -1,5 +1,5 @@
        	<div class="container">
-        <h1>Get new story</h1>
+        <h1>Today {{ $projectName }} Story</h1>
         <div class="table">
             <table class="table table-bordered table-striped table-hover">
                 <thead>
