@@ -5,8 +5,10 @@ Pada halaman credentials:
 pilih other
 (namai sesuai kebutuhan)
 
-2. buat API Key
-(namai sesuai kebutuhan)
+2. aktifkan service yang dibutuhkan
+e.g.: dalam project ini dibutuhkan Google Sheet
 
-3. aktifkan service yang dibutuhkan
-e.g.: dalam project ini dibutuhkan Google Sheet dan Google Apps Script Execution untuk menghindari 401 Authentication
+tutorial lengkap, ikuti
+https://developers.google.com/sheets/quickstart/php
+https://developers.google.com/sheets/guides/values#writing_to_a_single_range
+https://developers.google.com/sheets/guides/authorizing

@@ -1,7 +1,6 @@
 <?php
 
 use App\Lib\CrawlerRepository;
-use App\Lib\ParseStories;
 use App\Crawler;
 
 class CrawlerRepositoryTest extends BaseLibTest

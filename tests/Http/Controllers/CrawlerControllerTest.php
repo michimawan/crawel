@@ -3,13 +3,13 @@
 use Curl\Curl;
 use App\Crawler;
 use Carbon\Carbon;
-use App\Lib\Parser;
+use App\Lib\Helper;
 
 class CrawlerControllerTest extends BaseControllerTest
 {
     public function test_index()
     {
-        $projects = (new Parser())->reverseProjectIds(Config::get('pivotal.projects'));
+        $projects = (new Helper())->reverseProjectIds(Config::get('pivotal.projects'));
 
         $yesterdayDatas = factory(Crawler::class, 3)->create([
             'updated_at' => Carbon::today()->subDay(),
@@ -24,7 +24,7 @@ class CrawlerControllerTest extends BaseControllerTest
             }
         }
         $stories = Crawler::where('updated_at', '>=', Carbon::today())->get();
-        $stories = (new Parser)->grouping($projects, $stories);
+        $stories = (new Helper)->grouping($projects, $stories);
 
         $route = route('crawler.index');
         $response = $this->get($route, [])->response;

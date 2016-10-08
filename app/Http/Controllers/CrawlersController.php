@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use Log;
 use Curl\Curl;
 use Illuminate\Http\Request;
 
+use Google_Client as GoogleClient;
+use Google_Service_Sheets as GoogleSpreadSheets;
 use App\Lib\CrawlerRepository;
-use App\Lib\Parser;
+use App\Lib\GoogleSheet;
+use App\Lib\Helper;
 use App\Lib\Curler;
 use Carbon\Carbon;
 use App\Crawler;
@@ -17,10 +22,10 @@ class CrawlersController extends Controller
 	public function index()
 	{
 		$projects = Config::get('pivotal.projects');
-		$projects = (new Parser)->reverseProjectIds($projects);
+		$projects = (new Helper)->reverseProjectIds($projects);
 		$stories = Crawler::where('updated_at', '>=', Carbon::today())->get();
 
-		$stories = (new Parser)->grouping($projects, $stories);
+		$stories = (new Helper)->grouping($projects, $stories);
 
 		return view('crawler.index', [
 			'stories' => $stories,
@@ -47,10 +52,20 @@ class CrawlersController extends Controller
 		$curl = new Curl;
 		$curl->setHeader('X-TrackerToken', Config::get('pivotal.apiToken'));
 
-		$ids = (new Parser())->parse($stories);
+		$ids = (new Helper())->parse($stories);
 		$responses = (new Curler())->curl($project, $ids, $curl);
 		(new CrawlerRepository())->store($responses);
-		// hit excel
+		try {
+			$newRow = (new Helper())->prepareForSheet($project, $responses);
+			$client = new GoogleClient;
+			$googleSheet = new GoogleSheet();
+			$client = $googleSheet->setClient($client, Config::get('google.credentials'));
+			$googleSheet->sendToSpreadSheet($client, $newRow);
+		} catch(Exception $e) {
+			Log::info('Failed send to spreadsheet caused by: ' . $e->getMessage());
+			Log::info($e->getTraceAsString());
+		}
+
 		return redirect()->route('crawler.index');
 	}
 }
