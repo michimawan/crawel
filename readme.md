@@ -1,6 +1,6 @@
 # Pivotal Crawler
 
-Pivotal Crawler is a web application for get pivotal id from CI and push to google sheet. Pivotal crawler avaiable manage the project latest build from CI
+Pivotal Crawler is a web application for get pivotal id from CI and push to google sheet. Pivotal crawler available manage the project latest build from CI.
 
 ## Ho to use
 
