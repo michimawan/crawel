@@ -156,4 +156,11 @@ STRING;
 
         $this->assertEquals($expected, (new Helper())->prepareForSheet($project, $responses));
     }
+
+    public function test_sanitizeDate()
+    {
+        $date = '2016-11-13T03:49:01Z';
+        $expected = '2016-11-13';
+        $this->assertEquals($expected, (new Helper)->sanitizeDate($date, 'T'));
+    }
 }

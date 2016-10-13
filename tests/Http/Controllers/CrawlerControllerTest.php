@@ -7,12 +7,42 @@ use App\Lib\Helper;
 
 class CrawlerControllerTest extends BaseControllerTest
 {
-    public function test_index()
+    public function test_index_get_todays_stories()
     {
         $projects = (new Helper())->reverseProjectIds(Config::get('pivotal.projects'));
 
         $yesterdayDatas = factory(Crawler::class, 3)->create([
-            'updated_at' => Carbon::today()->subDay(),
+            'last_updated_at' => json_encode([Helper::sanitizeDate(Carbon::today()->subDay()->toDateTimeString(), ' ')]),
+        ]);
+        $todayDatas = factory(Crawler::class, 3)->create();
+
+        foreach($projects as $projectName => $project) {
+            $ids = array_keys($project);
+            foreach($ids as $id) {
+                $todayDatas->push(factory(Crawler::class)->create([
+                    'project_id' => $id,
+                ]));
+            }
+        }
+        $stories = (new Helper)->grouping($projects, $todayDatas);
+
+        $route = route('crawler.index');
+        $response = $this->get($route, [])->response;
+
+        $this->assertResponseOk();
+        $this->assertEquals('crawler.index', $response->original->getName());
+        $this->assertViewHas(['stories', 'projects']);
+        $this->assertEquals($stories->pluck('id'), $response->original->stories->pluck('id'));
+        $this->assertEquals($projects, $response->original->projects);
+    }
+
+    public function test_index_get_yesterday_stories()
+    {
+        $projects = (new Helper())->reverseProjectIds(Config::get('pivotal.projects'));
+
+        $yesterdayDate = Helper::sanitizeDate(Carbon::today()->subDay()->toDateTimeString(), ' ');
+        $yesterdayDatas = factory(Crawler::class, 3)->create([
+            'last_updated_at' => json_encode([$yesterdayDate]),
         ]);
 
         foreach($projects as $projectName => $project) {
@@ -23,17 +53,16 @@ class CrawlerControllerTest extends BaseControllerTest
                 ]);
             }
         }
-        $stories = Crawler::where('updated_at', '>=', Carbon::today())->get();
-        $stories = (new Helper)->grouping($projects, $stories);
+        $stories = (new Helper)->grouping($projects, $yesterdayDatas);
 
         $route = route('crawler.index');
-        $response = $this->get($route, [])->response;
+        $response = $this->get($route, [
+            'date' => $yesterdayDate
+        ])->response;
 
         $this->assertResponseOk();
         $this->assertEquals('crawler.index', $response->original->getName());
-        $this->assertViewHas(['stories', 'projects']);
-        $this->assertEquals($stories, $response->original->stories);
-        $this->assertEquals($projects, $response->original->projects);
+        $this->assertEquals($stories->pluck('id'), $response->original->stories->pluck('id'));
     }
 
     public function test_create()

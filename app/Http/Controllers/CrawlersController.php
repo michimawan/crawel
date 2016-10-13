@@ -19,11 +19,13 @@ use Config;
 
 class CrawlersController extends Controller
 {
-	public function index()
+	public function index(Request $request)
 	{
+		$date = $request->input('date') ? $request->input('date') : '';
+
 		$projects = Config::get('pivotal.projects');
 		$projects = (new Helper)->reverseProjectIds($projects);
-		$stories = Crawler::where('updated_at', '>=', Carbon::today())->get();
+		$stories = (new CrawlerRepository)->getByDate($date);
 
 		$stories = (new Helper)->grouping($projects, $stories);
 

@@ -1,8 +1,11 @@
 <?php
 namespace App\Lib;
 
-use App\Crawler;
 use Illuminate\Database\QueryException;
+use Carbon\Carbon;
+
+use App\Lib\Helper;
+use App\Crawler;
 
 class CrawlerRepository
 {
@@ -16,15 +19,31 @@ class CrawlerRepository
 				$crawler->point = isset($story->estimate) ? $story->estimate : 0;
 				$crawler->project_id = $story->project_id;
 				$crawler->story_type = $story->story_type;
-				$crawler->last_updated_at = $story->updated_at;
+
+				$date = (new Helper)->sanitizeDate($story->updated_at, 'T');
+				$crawler->last_updated_at = json_encode([$date]);
 				try {
 					$crawler->save();
 				} catch(QueryException $e) {
 					$oldData = Crawler::where('pivotal_id', $story->id)->first();
-					$oldData->last_updated_at = $story->updated_at;
+
+					$lastUpdatedAt = json_decode($oldData->last_updated_at);
+
+					$date = (new Helper)->sanitizeDate($story->updated_at, 'T');
+					$lastUpdatedAt[] = $date;
+
+					$oldData->last_updated_at = json_encode($lastUpdatedAt);
 					$oldData->save();
 				}
 			}
 		}
+	}
+
+	public function getByDate($date = '')
+	{
+		if (! strlen($date)) {
+			$date = Helper::sanitizeDate(Carbon::today()->toDateTimeString(), ' ');
+		}
+		return Crawler::whereRaw("JSON_SEARCH(last_updated_at, 'one', '{$date}') IS NOT NULL")->get();
 	}
 }

@@ -11,7 +11,11 @@
 |
 */
 
+use App\Lib\Helper;
+use Carbon\Carbon;
+
 $factory->define(App\Crawler::class, function (Faker\Generator $faker) {
+	$date = Helper::sanitizeDate(Carbon::today()->toDateTimeString(), ' ');
 
     return [
         'pivotal_id' => $faker->randomNumber + rand(10, 100),
@@ -19,6 +23,6 @@ $factory->define(App\Crawler::class, function (Faker\Generator $faker) {
         'point' => $faker->randomDigit,
         'project_id' => $faker->randomNumber,
         'story_type' => $faker->word,
-        'last_updated_at' => $faker->iso8601(),
+        'last_updated_at' => json_encode([$date]),
     ];
 });

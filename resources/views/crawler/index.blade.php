@@ -3,6 +3,14 @@
 @section('content')
 <div class="container">
 
+{!! Form::open([
+  'route' => 'crawler.index',
+  'method' => 'GET',
+  'class' => '']) !!}
+{!! Form::date('date', \Carbon\Carbon::now(), ['class' => '']) !!}
+{!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
+{!! Form::close() !!}
+
 <div>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">

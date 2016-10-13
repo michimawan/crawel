@@ -70,4 +70,9 @@ class Helper
 		$preparedContent[] = $str;
 		return [$preparedContent];
 	}
+
+	public static function sanitizeDate($date, $delimeter)
+	{
+		return substr($date, 0, strpos($date, $delimeter));
+	}
 }
