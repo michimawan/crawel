@@ -78,7 +78,7 @@ class CrawlerRepositoryTest extends BaseLibTest
 		$this->assertEquals(4, Crawler::count());
 	}
 
-	public function test_store_same_data_should_add_lastUpdateAt_column()
+	public function test_store_same_data_should_not_add_lastUpdateAt_column_if_on_the_same_day()
 	{
 		$crawlerCount = Crawler::count();
 
@@ -106,20 +106,35 @@ class CrawlerRepositoryTest extends BaseLibTest
 			],
 		];
 		$crawler->store($response);
+
+		$date = Helper::sanitizeDate(Carbon::now()->toDateTimeString(), ' ');
 		$newUpdatedAt = json_decode(Crawler::where('pivotal_id', 1301)->first()->last_updated_at);
 		$this->assertEquals(4, Crawler::count());
-		$this->assertNotEquals(count($lastUpdatedAt), count($newUpdatedAt));
-		$this->assertContains('2016-10-13', $newUpdatedAt);
-		$this->assertEquals(2, count($newUpdatedAt));
+		$this->assertEquals(count($lastUpdatedAt), count($newUpdatedAt));
+		$this->assertContains($date, $newUpdatedAt);
+		$this->assertEquals(1, count($newUpdatedAt));
+	}
 
+	public function test_store_same_data_should_add_lastUpdateAt_column_if_on_the_different_day()
+	{
+		$crawlerCount = Crawler::count();
 
-		// saved the third time, to make sure there are three updated_at data
+		$crawler = new CrawlerRepository();
+		$crawler->store($this->responses);
+
+		$response = $this->responses;
+		unset($response[3333]);
+		unset($response[1234]);
+
+		$lastUpdatedAt = json_decode(Crawler::where('pivotal_id', 1301)->first()->last_updated_at);
+		Carbon::setTestNow(Carbon::now()->subDay());
+
 		$response[2222] = [
 			(object) [
 				'kind' => 'story',
 		        'id' => 1301,
 		      	'created_at' => '2016-09-09T07:54:22Z',
-		      	'updated_at' => '2016-11-13T03:49:01Z',
+		      	'updated_at' => '2016-10-13T03:49:01Z',
 		      	'accepted_at' => '2016-09-09T08:58:26Z',
 		      	'story_type' => 'chore',
 		      	'name' => 'refactoring 2',
@@ -129,10 +144,24 @@ class CrawlerRepositoryTest extends BaseLibTest
 			],
 		];
 		$crawler->store($response);
+
+		$date = Helper::sanitizeDate(Carbon::now()->toDateTimeString(), ' ');
 		$newUpdatedAt = json_decode(Crawler::where('pivotal_id', 1301)->first()->last_updated_at);
 		$this->assertEquals(4, Crawler::count());
 		$this->assertNotEquals(count($lastUpdatedAt), count($newUpdatedAt));
+		$this->assertContains($date, $newUpdatedAt);
+		$this->assertEquals(2, count($newUpdatedAt));
+
+		// store again for other diff day
+		Carbon::setTestNow(Carbon::now()->subDays(2));
+		$crawler->store($response);
+
+		$date = Helper::sanitizeDate(Carbon::now()->toDateTimeString(), ' ');
+		$newUpdatedAt = json_decode(Crawler::where('pivotal_id', 1301)->first()->last_updated_at);
+		$this->assertEquals(4, Crawler::count());
+		$this->assertContains($date, $newUpdatedAt);
 		$this->assertEquals(3, count($newUpdatedAt));
+		Carbon::setTestNow();
 	}
 
 	public function test_store_when_failed_to_fetch()

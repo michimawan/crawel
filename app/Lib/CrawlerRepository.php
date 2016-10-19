@@ -20,7 +20,7 @@ class CrawlerRepository
 				$crawler->project_id = $story->project_id;
 				$crawler->story_type = $story->story_type;
 
-				$date = (new Helper)->sanitizeDate($story->updated_at, 'T');
+				$date = Helper::sanitizeDate($this->todayDate(), ' ');
 				$crawler->last_updated_at = json_encode([$date]);
 				try {
 					$crawler->save();
@@ -28,9 +28,9 @@ class CrawlerRepository
 					$oldData = Crawler::where('pivotal_id', $story->id)->first();
 
 					$lastUpdatedAt = json_decode($oldData->last_updated_at);
-
-					$date = (new Helper)->sanitizeDate($story->updated_at, 'T');
-					$lastUpdatedAt[] = $date;
+					if (! in_array($date, $lastUpdatedAt)) {
+						$lastUpdatedAt[] = $date;
+					}
 
 					$oldData->last_updated_at = json_encode($lastUpdatedAt);
 					$oldData->save();
@@ -39,10 +39,15 @@ class CrawlerRepository
 		}
 	}
 
+	private function todayDate()
+	{
+		return Carbon::now()->toDateTimeString();
+	}
+
 	public function getByDate($date = '')
 	{
 		if (! strlen($date)) {
-			$date = Helper::sanitizeDate(Carbon::today()->toDateTimeString(), ' ');
+			$date = Helper::sanitizeDate($this->todayDate(), ' ');
 		}
 		return Crawler::whereRaw("JSON_SEARCH(last_updated_at, 'one', '{$date}') IS NOT NULL")->get();
 	}
