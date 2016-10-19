@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use App\Lib\Helper;
 use App\Crawler;
 
@@ -148,10 +149,12 @@ STRING;
             3333 => [],
         ];
 
+        $date = Carbon::now();
         $project = 'foo';
         $expected = [[
+            $date->toDateTimeString(),
             $project,
-            "1. [#1200][foo-4] refactoring (chore) \r\n2. [#1300][foo-4] refactoring 2 (bug) \r\n3. [#1301][foo-5] refactoring 2 (2 point) \r\n"
+            "1. [#1200][foo-4] refactoring (chore) \r\n2. [#1300][foo-4] refactoring 2 (bug) \r\n3. [#1301][foo-5] refactoring 2 (2 point)"
         ]];
 
         $this->assertEquals($expected, (new Helper())->prepareForSheet($project, $responses));

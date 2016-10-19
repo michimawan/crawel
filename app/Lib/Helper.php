@@ -2,8 +2,9 @@
 
 namespace App\Lib;
 
-use Config;
 use Illuminate\Support\Collection;
+use Carbon\Carbon;
+use Config;
 
 class Helper
 {
@@ -58,16 +59,19 @@ class Helper
 		$preparedContent = [];
 		$index = 1;
 		$str = "";
+
+		$tmpContent = [];
 		foreach($rawResponse as $subProject) {
 			foreach($subProject as $story) {
 				$type = $story->story_type == 'chore' || $story->story_type == 'bug' ? $story->story_type : "{$story->estimate} point";
 
-				$str .= "{$index}. [#{$story->id}][{$mappedProjectIds[$project][$story->project_id]}] {$story->name} ({$type}) \r\n";
+				$tmpContent[] = "{$index}. [#{$story->id}][{$mappedProjectIds[$project][$story->project_id]}] {$story->name} ({$type})";
 				$index++;
 			}
 		}
+		$preparedContent[] = Carbon::now()->toDateTimeString();
 		$preparedContent[] = $project;
-		$preparedContent[] = $str;
+		$preparedContent[] = join(" \r\n", $tmpContent);
 		return [$preparedContent];
 	}
 
