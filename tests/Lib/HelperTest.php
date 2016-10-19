@@ -126,7 +126,7 @@ STRING;
                     'accepted_at' => '2016-09-09T08:58:26Z',
                     'story_type' => 'bug',
                     'name' => 'refactoring 2',
-                    'current_state' => 'accepted',
+                    'current_state' => 'delivered',
                     'url' => 'https://www.pivotaltracker.com/story/show/1300',
                     'project_id' => 1234,
                 ],
@@ -141,7 +141,7 @@ STRING;
                     'story_type' => 'feature',
                     'estimate' => 2,
                     'name' => 'refactoring 2',
-                    'current_state' => 'accepted',
+                    'current_state' => 'rejected',
                     'url' => 'https://www.pivotaltracker.com/story/show/1301',
                     'project_id' => 2222,
                 ],
@@ -154,7 +154,7 @@ STRING;
         $expected = [[
             $date->toDateTimeString(),
             $project,
-            "1. [#1200][foo-4] refactoring (chore) \r\n2. [#1300][foo-4] refactoring 2 (bug) \r\n3. [#1301][foo-5] refactoring 2 (2 point)"
+            "1. [#1200][foo-4] refactoring (chore, accepted) \r\n2. [#1300][foo-4] refactoring 2 (bug, delivered) \r\n3. [#1301][foo-5] refactoring 2 (2 point(s), rejected)"
         ]];
 
         $this->assertEquals($expected, (new Helper())->prepareForSheet($project, $responses));

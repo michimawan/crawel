@@ -51,6 +51,11 @@ class CrawlersController extends Controller
 	{
 		$stories = $request->input('stories');
 		$project = $request->input('project');
+
+		if (is_null($stories)) {
+			return redirect()->route('crawler.create');
+		}
+
 		$curl = new Curl;
 		$curl->setHeader('X-TrackerToken', Config::get('pivotal.apiToken'));
 

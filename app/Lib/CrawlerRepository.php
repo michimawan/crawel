@@ -19,6 +19,7 @@ class CrawlerRepository
 				$crawler->point = isset($story->estimate) ? $story->estimate : 0;
 				$crawler->project_id = $story->project_id;
 				$crawler->story_type = $story->story_type;
+				$crawler->status = $story->current_state;
 
 				$date = Helper::sanitizeDate($this->todayDate(), ' ');
 				$crawler->last_updated_at = json_encode([$date]);
@@ -33,6 +34,7 @@ class CrawlerRepository
 					}
 
 					$oldData->last_updated_at = json_encode($lastUpdatedAt);
+					$crawler->status = $story->current_state;
 					$oldData->save();
 				}
 			}

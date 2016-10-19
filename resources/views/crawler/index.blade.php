@@ -36,7 +36,7 @@
         <div role="tabpanel" class="tab-pane{!! $active !!}" id="{{ $projectName }}">
         @include('crawler._data', [
             'projectName' => $projectName,
-            'stories' => is_null($stories->get($projectName)) ? collect() : $stories->get($projectName),
+            'stories' => is_null($stories->get($projectName)) ? collect() : $stories->get($projectName)->values(),
             'projectIds' => $projectIds
         ])
         </div>

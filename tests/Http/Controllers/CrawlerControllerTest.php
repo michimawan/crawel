@@ -82,4 +82,22 @@ class CrawlerControllerTest extends BaseControllerTest
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertRedirectedToRoute('crawler.index');
     }
+
+    public function test_store_failed()
+    {
+        $text = [];
+        $path = route('crawler.store');
+        $response = $this->call('POST', $path, $text);
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertRedirectedToRoute('crawler.create');
+    }
+
+    public function test_store_empty_field()
+    {
+        $text = [];
+        $path = route('crawler.store');
+        $response = $this->call('POST', $path, $text);
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertRedirectedToRoute('crawler.create');
+    }
 }

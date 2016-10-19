@@ -63,9 +63,9 @@ class Helper
 		$tmpContent = [];
 		foreach($rawResponse as $subProject) {
 			foreach($subProject as $story) {
-				$type = $story->story_type == 'chore' || $story->story_type == 'bug' ? $story->story_type : "{$story->estimate} point";
+				$type = $story->story_type == 'chore' || $story->story_type == 'bug' ? $story->story_type : "{$story->estimate} point(s)";
 
-				$tmpContent[] = "{$index}. [#{$story->id}][{$mappedProjectIds[$project][$story->project_id]}] {$story->name} ({$type})";
+				$tmpContent[] = "{$index}. [#{$story->id}][{$mappedProjectIds[$project][$story->project_id]}] {$story->name} ({$type}, {$story->current_state})";
 				$index++;
 			}
 		}

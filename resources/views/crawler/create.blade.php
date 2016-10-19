@@ -16,7 +16,7 @@
   <div class="form-group">
     <div class="col-sm-10">
       <!-- {!! Form::label('stories', 'Stories', ['class' => '']) !!} -->
-      {!! Form::textarea('stories', '', ['class' => '']) !!}
+      {!! Form::textarea('stories', '', ['class' => '', 'required']) !!}
     </div>
   </div>
 

@@ -6,8 +6,8 @@
                     <tr>
                         <th>No</th>
                         <th>Story Id</th>
-                        <th>Title</th>
                         <th>Project Name</th>
+                        <th>Title</th>
                         <th>Story type & Points</th>
                     </tr>
                 </thead>
@@ -16,9 +16,12 @@
                     <tr>
                         <td>{{ $i+1 }}</td>
                         <td>{{ "[#" . $item->pivotal_id . "]" }}</td>
-                        <td>{{ $item->title }}</td>
                         <td>{{ isset($projectIds[$item->project_id]) ? $projectIds[$item->project_id] : "" }}</td>
-                        <td>{{ "(". $item->story_type . ", " . $item->point . ")"}}</td>
+                        <td>{{ $item->title }}</td>
+                        <?php
+                        $type = $item->story_type == 'feature' ? $item->point . ' point(s)' : $item->story_type;
+                        ?>
+                        <td>{{ "(". $type .", " . $item->status . ")"}}</td>
                     </tr>
                 @endforeach
                 </tbody>
