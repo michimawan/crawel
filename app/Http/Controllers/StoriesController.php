@@ -9,15 +9,15 @@ use Illuminate\Http\Request;
 
 use Google_Client as GoogleClient;
 use Google_Service_Sheets as GoogleSpreadSheets;
-use App\Lib\CrawlerRepository;
+use App\Lib\StoryRepository;
 use App\Lib\GoogleSheet;
 use App\Lib\Helper;
 use App\Lib\Curler;
 use Carbon\Carbon;
-use App\Crawler;
+use App\Story;
 use Config;
 
-class CrawlersController extends Controller
+class StoriesController extends Controller
 {
 	public function index(Request $request)
 	{
@@ -25,12 +25,11 @@ class CrawlersController extends Controller
 
 		$projects = Config::get('pivotal.projects');
 		$projects = (new Helper)->reverseProjectIds($projects);
-		// $stories = (new CrawlerRepository)->getByDate($date);
-		$stories = Crawler::all();
+		$stories = (new StoryRepository)->getByDate($date);
 
 		$stories = (new Helper)->grouping($projects, $stories);
 
-		return view('crawler.index', [
+		return view('stories.index', [
 			'stories' => $stories,
 			'projects' => $projects,
 		]);
@@ -43,7 +42,7 @@ class CrawlersController extends Controller
 		foreach($project as $key => $p) {
 			$option[$key] = $key;
 		}
-        return view('crawler.create', [
+        return view('stories.create', [
         	'options' => $option
         ]);
 	}
@@ -54,7 +53,7 @@ class CrawlersController extends Controller
 		$project = $request->input('project');
 
 		if (is_null($stories)) {
-			return redirect()->route('crawler.create');
+			return redirect()->route('stories.create');
 		}
 
 		$curl = new Curl;
@@ -62,7 +61,7 @@ class CrawlersController extends Controller
 
 		$ids = (new Helper())->parse($stories);
 		$responses = (new Curler())->curl($project, $ids, $curl);
-		(new CrawlerRepository())->store($responses);
+		(new StoryRepository())->store($responses);
 		try {
 			$newRow = (new Helper())->prepareForSheet($project, $responses);
 			$client = new GoogleClient;
@@ -74,6 +73,6 @@ class CrawlersController extends Controller
 			Log::info($e->getTraceAsString());
 		}
 
-		return redirect()->route('crawler.index');
+		return redirect()->route('stories.index');
 	}
 }

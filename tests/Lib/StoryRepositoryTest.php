@@ -2,11 +2,11 @@
 
 use Carbon\Carbon;
 
-use App\Lib\CrawlerRepository;
+use App\Lib\StoryRepository;
 use App\Lib\Helper;
-use App\Crawler;
+use App\Story;
 
-class CrawlerRepositoryTest extends BaseLibTest
+class StoryRepositoryTest extends BaseLibTest
 {
 	public function setUp()
 	{
@@ -71,25 +71,25 @@ class CrawlerRepositoryTest extends BaseLibTest
 
 	public function test_store()
 	{
-		$crawlerCount = Crawler::count();
+		$storyCount = Story::count();
 
-		$crawler = new CrawlerRepository();
-		$crawler->store($this->responses);
-		$this->assertEquals(4, Crawler::count());
+		$story = new StoryRepository();
+		$story->store($this->responses);
+		$this->assertEquals(4, Story::count());
 	}
 
 	public function test_store_same_data_should_not_add_lastUpdateAt_column_if_on_the_same_day()
 	{
-		$crawlerCount = Crawler::count();
+		$storyCount = Story::count();
 
-		$crawler = new CrawlerRepository();
-		$crawler->store($this->responses);
+		$story = new StoryRepository();
+		$story->store($this->responses);
 
 		$response = $this->responses;
 		unset($response[3333]);
 		unset($response[1234]);
 
-		$lastUpdatedAt = json_decode(Crawler::where('pivotal_id', 1301)->first()->last_updated_at);
+		$lastUpdatedAt = json_decode(Story::where('pivotal_id', 1301)->first()->last_updated_at);
 
 		$response[2222] = [
 			(object) [
@@ -105,11 +105,11 @@ class CrawlerRepositoryTest extends BaseLibTest
 		      	'project_id' => 2222,
 			],
 		];
-		$crawler->store($response);
+		$story->store($response);
 
 		$date = Helper::sanitizeDate(Carbon::now()->toDateTimeString(), ' ');
-		$newUpdatedAt = json_decode(Crawler::where('pivotal_id', 1301)->first()->last_updated_at);
-		$this->assertEquals(4, Crawler::count());
+		$newUpdatedAt = json_decode(Story::where('pivotal_id', 1301)->first()->last_updated_at);
+		$this->assertEquals(4, Story::count());
 		$this->assertEquals(count($lastUpdatedAt), count($newUpdatedAt));
 		$this->assertContains($date, $newUpdatedAt);
 		$this->assertEquals(1, count($newUpdatedAt));
@@ -117,16 +117,16 @@ class CrawlerRepositoryTest extends BaseLibTest
 
 	public function test_store_same_data_should_add_lastUpdateAt_column_if_on_the_different_day()
 	{
-		$crawlerCount = Crawler::count();
+		$storyCount = Story::count();
 
-		$crawler = new CrawlerRepository();
-		$crawler->store($this->responses);
+		$story = new StoryRepository();
+		$story->store($this->responses);
 
 		$response = $this->responses;
 		unset($response[3333]);
 		unset($response[1234]);
 
-		$lastUpdatedAt = json_decode(Crawler::where('pivotal_id', 1301)->first()->last_updated_at);
+		$lastUpdatedAt = json_decode(Story::where('pivotal_id', 1301)->first()->last_updated_at);
 		Carbon::setTestNow(Carbon::now()->subDay());
 
 		$response[2222] = [
@@ -143,22 +143,22 @@ class CrawlerRepositoryTest extends BaseLibTest
 		      	'project_id' => 2222,
 			],
 		];
-		$crawler->store($response);
+		$story->store($response);
 
 		$date = Helper::sanitizeDate(Carbon::now()->toDateTimeString(), ' ');
-		$newUpdatedAt = json_decode(Crawler::where('pivotal_id', 1301)->first()->last_updated_at);
-		$this->assertEquals(4, Crawler::count());
+		$newUpdatedAt = json_decode(Story::where('pivotal_id', 1301)->first()->last_updated_at);
+		$this->assertEquals(4, Story::count());
 		$this->assertNotEquals(count($lastUpdatedAt), count($newUpdatedAt));
 		$this->assertContains($date, $newUpdatedAt);
 		$this->assertEquals(2, count($newUpdatedAt));
 
 		// store again for other diff day
 		Carbon::setTestNow(Carbon::now()->subDays(2));
-		$crawler->store($response);
+		$story->store($response);
 
 		$date = Helper::sanitizeDate(Carbon::now()->toDateTimeString(), ' ');
-		$newUpdatedAt = json_decode(Crawler::where('pivotal_id', 1301)->first()->last_updated_at);
-		$this->assertEquals(4, Crawler::count());
+		$newUpdatedAt = json_decode(Story::where('pivotal_id', 1301)->first()->last_updated_at);
+		$this->assertEquals(4, Story::count());
 		$this->assertContains($date, $newUpdatedAt);
 		$this->assertEquals(3, count($newUpdatedAt));
 		Carbon::setTestNow();
@@ -166,65 +166,65 @@ class CrawlerRepositoryTest extends BaseLibTest
 
 	public function test_store_when_failed_to_fetch()
 	{
-		$crawlerCount = Crawler::count();
+		$storyCount = Story::count();
 
-		$crawler = new CrawlerRepository();
-		$crawler->store([]);
-		$this->assertEquals(0, Crawler::count());
+		$story = new StoryRepository();
+		$story->store([]);
+		$this->assertEquals(0, Story::count());
 	}
 
 	public function test_getByDate_return_expected_stories()
 	{
 		$lastTwoDayDate = Helper::sanitizeDate(Carbon::today()->subDays(2)->toDateTimeString(), ' ');
-		$lastTwoDay = factory(Crawler::class)->create([
+		$lastTwoDay = factory(Story::class)->create([
 			'last_updated_at' => json_encode([$lastTwoDayDate]),
 		]);
 
 		$yesterdayDate = Helper::sanitizeDate(Carbon::today()->subDay()->toDateTimeString(), ' ');
-		$yesterday = factory(Crawler::class)->create([
+		$yesterday = factory(Story::class)->create([
 			'last_updated_at' => json_encode([$yesterdayDate]),
 		]);
 
 		$todayDate = Helper::sanitizeDate(Carbon::today()->toDateTimeString(), ' ');
-		$today = factory(Crawler::class)->create([
+		$today = factory(Story::class)->create([
 			'last_updated_at' => json_encode([$todayDate]),
 		]);
 
 		// 2016-10-13
-		$crawler = new CrawlerRepository();
-		$result = $crawler->getByDate($yesterdayDate);
+		$story = new StoryRepository();
+		$result = $story->getByDate($yesterdayDate);
 		$this->assertEquals(1, $result->count());
 		$this->assertEquals($yesterday->id, $result->first()->id);
 
-		$result = $crawler->getByDate($todayDate);
+		$result = $story->getByDate($todayDate);
 		$this->assertEquals($today->id, $result->first()->id);
 	}
 
 	public function test_getByDate_when_no_date_send_return_today()
 	{
 		$lastTwoDayDate = Helper::sanitizeDate(Carbon::today()->subDays(2)->toDateTimeString(), ' ');
-		$lastTwoDay = factory(Crawler::class)->create([
+		$lastTwoDay = factory(Story::class)->create([
 			'last_updated_at' => json_encode([$lastTwoDayDate]),
 		]);
 
 		$yesterdayDate = Helper::sanitizeDate(Carbon::today()->subDay()->toDateTimeString(), ' ');
-		$yesterday = factory(Crawler::class)->create([
+		$yesterday = factory(Story::class)->create([
 			'last_updated_at' => json_encode([$yesterdayDate]),
 		]);
 
 		$todayDate = Helper::sanitizeDate(Carbon::today()->toDateTimeString(), ' ');
-		$today1 = factory(Crawler::class)->create([
+		$today1 = factory(Story::class)->create([
 			'last_updated_at' => json_encode([$todayDate]),
 		]);
-		$today2 = factory(Crawler::class)->create([
+		$today2 = factory(Story::class)->create([
 			'last_updated_at' => json_encode([$todayDate]),
 		]);
-		$today3 = factory(Crawler::class)->create([
+		$today3 = factory(Story::class)->create([
 			'last_updated_at' => json_encode([$todayDate]),
 		]);
 
-		$crawler = new CrawlerRepository();
-		$result = $crawler->getByDate();
+		$story = new StoryRepository();
+		$result = $story->getByDate();
 		$this->assertEquals(3, $result->count());
 		$this->assertEquals($today1->id, $result->first()->id);
 		$this->assertEquals($today3->id, $result->last()->id);

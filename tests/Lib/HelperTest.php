@@ -2,7 +2,7 @@
 
 use Carbon\Carbon;
 use App\Lib\Helper;
-use App\Crawler;
+use App\Story;
 
 class HelperTest extends BaseLibTest
 {
@@ -64,21 +64,21 @@ STRING;
 
     public function test_grouping()
     {
-        $stories = factory(Crawler::class, 2)->make([
+        $stories = factory(Story::class, 2)->make([
             'project_id' => 2
         ]);
         $stories->push(
-            factory(Crawler::class)->make([
+            factory(Story::class)->make([
                 'project_id' => 3
             ])
         );
         $stories->push(
-            factory(Crawler::class)->make([
+            factory(Story::class)->make([
                 'project_id' => 4
             ])
         );
         $stories->push(
-            factory(Crawler::class)->make([
+            factory(Story::class)->make([
                 'project_id' => 5
             ])
         );

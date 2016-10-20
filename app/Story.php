@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Crawler extends Model
+class Story extends Model
 {
 	protected $fillable = [
 		'pivotal_id',

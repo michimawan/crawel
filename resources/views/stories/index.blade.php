@@ -4,7 +4,7 @@
 <div class="container">
 
 {!! Form::open([
-  'route' => 'crawler.index',
+  'route' => 'stories.index',
   'method' => 'GET',
   'class' => '']) !!}
 {!! Form::date('date', \Carbon\Carbon::now(), ['class' => 'btn-small']) !!}
@@ -54,7 +54,7 @@
     @endphp
     @foreach($projects as $projectName => $projectIds)
         <div role="tabpanel" class="tab-pane{!! $active !!}" id="{{ $projectName }}">
-        @include('crawler._data', [
+        @include('stories._data', [
             'projectName' => $projectName,
             'stories' => is_null($stories->get($projectName)) ? collect() : $stories->get($projectName)->values(),
             'projectIds' => $projectIds

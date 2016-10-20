@@ -2,7 +2,7 @@
 
 @section('content')
 {!! Form::open([
-	'route' => 'crawler.store',
+	'route' => 'stories.store',
 	'method' => 'POST',
 	'class' => '']) !!}
 <div class="container">

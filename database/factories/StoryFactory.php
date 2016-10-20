@@ -14,7 +14,7 @@
 use App\Lib\Helper;
 use Carbon\Carbon;
 
-$factory->define(App\Crawler::class, function (Faker\Generator $faker) {
+$factory->define(App\Story::class, function (Faker\Generator $faker) {
 	$date = Helper::sanitizeDate(Carbon::today()->toDateTimeString(), ' ');
 
     return [
