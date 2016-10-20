@@ -34,7 +34,7 @@ class CrawlerRepository
 					}
 
 					$oldData->last_updated_at = json_encode($lastUpdatedAt);
-					$crawler->status = $story->current_state;
+					$oldData->status = $story->current_state;
 					$oldData->save();
 				}
 			}
