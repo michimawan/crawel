@@ -2,7 +2,7 @@
 
 use Carbon\Carbon;
 use App\Lib\Helper;
-use App\Story;
+use App\Models\Story;
 
 class HelperTest extends BaseLibTest
 {

@@ -7,7 +7,7 @@ use App\Lib\Helper;
 
 class StoriesControllerTest extends BaseControllerTest
 {
-    public function test_index_get_todays_stories()
+    public function xtest_index_get_todays_stories()
     {
         $projects = (new Helper())->reverseProjectIds(Config::get('pivotal.projects'));
 
@@ -36,7 +36,7 @@ class StoriesControllerTest extends BaseControllerTest
         $this->assertEquals($projects, $response->original->projects);
     }
 
-    public function test_index_get_yesterday_stories()
+    public function xtest_index_get_yesterday_stories()
     {
         $projects = (new Helper())->reverseProjectIds(Config::get('pivotal.projects'));
 

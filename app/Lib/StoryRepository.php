@@ -5,7 +5,7 @@ use Illuminate\Database\QueryException;
 use Carbon\Carbon;
 
 use App\Lib\Helper;
-use App\Story;
+use App\Models\Story;
 
 class StoryRepository
 {
@@ -22,18 +22,10 @@ class StoryRepository
 				$story->status = $task->current_state;
 
 				$date = Helper::sanitizeDate($this->todayDate(), ' ');
-				$story->last_updated_at = json_encode([$date]);
 				try {
 					$story->save();
 				} catch(QueryException $e) {
 					$oldData = Story::where('pivotal_id', $task->id)->first();
-
-					$lastUpdatedAt = json_decode($oldData->last_updated_at);
-					if (! in_array($date, $lastUpdatedAt)) {
-						$lastUpdatedAt[] = $date;
-					}
-
-					$oldData->last_updated_at = json_encode($lastUpdatedAt);
 					$oldData->status = $task->current_state;
 					$oldData->save();
 				}
