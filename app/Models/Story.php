@@ -14,4 +14,12 @@ class Story extends Model
 		'project_name',
 		'story_type'
 	];
+
+    /**
+     * relation section
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'story_tag');
+    }
 }
