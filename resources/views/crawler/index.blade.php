@@ -7,14 +7,14 @@
   'route' => 'crawler.index',
   'method' => 'GET',
   'class' => '']) !!}
-{!! Form::date('date', \Carbon\Carbon::now(), ['class' => '']) !!}
-{!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
+{!! Form::date('date', \Carbon\Carbon::now(), ['class' => 'btn-small']) !!}
+{!! Form::submit('Submit', ['class' => 'btn btn-info btn-sm']) !!}
 {!! Form::close() !!}
-
 <div>
+<div role="presentation" class="divider"><div>
 
 <div class="dropdown">
-  <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Greentag Timing
+  <button class="btn btn-success dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Greentag Timing
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
@@ -23,7 +23,15 @@
       <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Greentag list</a></li>
       <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Greentag list</a></li>
   </ul>
-</div>  
+</div>
+<div role="presentation" class="divider"><div>
+<ul class="nav navbar-right">
+    <a href="{{ url('/create') }}">
+        <button type="button" class="btn btn-warning btn-sm">Send to google spreadsheets</button>
+        <button type="button" class="btn btn-danger btn-sm">Create daily email</button>
+    </a>
+</ul>  
+<div role="presentation" class="divider"><div>
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     @php

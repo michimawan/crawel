@@ -37,7 +37,7 @@
             <div class="collapse navbar-collapse" id="app-navbar-collapse">
                 <ul class="nav navbar-brand navbar-right">
                     <a href="{{ url('/create') }}">
-                        Create Story List
+                        <button type="button" class="btn btn-success btn-sm">Create Story List</button>
                     </a>
                 </ul>
             </div>

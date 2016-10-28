@@ -25,7 +25,8 @@ class CrawlersController extends Controller
 
 		$projects = Config::get('pivotal.projects');
 		$projects = (new Helper)->reverseProjectIds($projects);
-		$stories = (new CrawlerRepository)->getByDate($date);
+		// $stories = (new CrawlerRepository)->getByDate($date);
+		$stories = Crawler::all();
 
 		$stories = (new Helper)->grouping($projects, $stories);
 
