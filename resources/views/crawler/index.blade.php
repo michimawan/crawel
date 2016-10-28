@@ -12,6 +12,18 @@
 {!! Form::close() !!}
 
 <div>
+
+<div class="dropdown">
+  <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Greentag Timing
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Greentag list</a></li>
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Greentag list</a></li>
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Greentag list</a></li>
+      <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Greentag list</a></li>
+  </ul>
+</div>  
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     @php
