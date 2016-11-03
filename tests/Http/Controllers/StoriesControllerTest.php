@@ -76,7 +76,7 @@ class StoriesControllerTest extends BaseControllerTest
 
     public function test_store_success()
     {
-    	$text = ['stories' => '[#211123] foo'];
+        $text = ['stories' => '[#211123] foo', 'project' => 'foo'];
         $path = route('stories.store');
         $response = $this->call('POST', $path, $text);
         $this->assertEquals(302, $response->getStatusCode());

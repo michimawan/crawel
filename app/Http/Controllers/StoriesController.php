@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Google_Client as GoogleClient;
 use Google_Service_Sheets as GoogleSpreadSheets;
 use App\Lib\StoryRepository;
+use App\Lib\TagRepository;
 use App\Lib\GoogleSheet;
 use App\Lib\Helper;
 use App\Lib\Curler;
@@ -59,19 +60,10 @@ class StoriesController extends Controller
 		$curl = new Curl;
 		$curl->setHeader('X-TrackerToken', Config::get('pivotal.apiToken'));
 
-		$ids = (new Helper())->parse($stories);
+        list($greenTags, $ids) = Helper::parseText($stories);
 		$responses = (new Curler())->curl($project, $ids, $curl);
 		(new StoryRepository())->store($responses);
-		try {
-			$newRow = (new Helper())->prepareForSheet($project, $responses);
-			$client = new GoogleClient;
-			$googleSheet = new GoogleSheet();
-			$client = $googleSheet->setClient($client, Config::get('google.credentials'));
-			$googleSheet->sendToSpreadSheet($client, $newRow);
-		} catch(Exception $e) {
-			Log::info('Failed send to spreadsheet caused by: ' . $e->getMessage());
-			Log::info($e->getTraceAsString());
-		}
+        (new TagRepository())->store($project, $greenTags);
 		// try {
 		// 	$newRow = (new Helper())->prepareForSheet($project, $responses);
 		// 	$client = new GoogleClient;
