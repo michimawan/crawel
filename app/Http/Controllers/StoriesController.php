@@ -72,6 +72,16 @@ class StoriesController extends Controller
 			Log::info('Failed send to spreadsheet caused by: ' . $e->getMessage());
 			Log::info($e->getTraceAsString());
 		}
+		// try {
+		// 	$newRow = (new Helper())->prepareForSheet($project, $responses);
+		// 	$client = new GoogleClient;
+		// 	$googleSheet = new GoogleSheet();
+		// 	$client = $googleSheet->setClient($client, Config::get('google.credentials'));
+		// 	$googleSheet->sendToSpreadSheet($client, $newRow);
+		// } catch(Exception $e) {
+		// 	Log::info('Failed send to spreadsheet caused by: ' . $e->getMessage());
+		// 	Log::info($e->getTraceAsString());
+		// }
 
 		return redirect()->route('stories.index');
 	}
