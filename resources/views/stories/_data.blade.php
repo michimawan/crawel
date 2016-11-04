@@ -5,6 +5,7 @@
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>GreenTag Id</th>
                         <th>Story Id</th>
                         <th>Project Name</th>
                         <th>Title</th>
@@ -12,10 +13,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                @if (isset($tag->stories))
-                @foreach($tag->stories as $i => $item)
+                @foreach($tag as $greenTag)
+                @foreach($greenTag->stories as $i => $item)
                     <tr>
                         <td>{{ $i+1 }}</td>
+                        <td>{{ $greenTag->code }}</td>
                         <td>{{ "[#" . $item->pivotal_id . "]" }}</td>
                         <td>{{ isset($projectIds[$item->project_id]) ? $projectIds[$item->project_id] : "" }}</td>
                         <td>{{ $item->title }}</td>
@@ -25,7 +27,7 @@
                         <td>{{ "(". $type .", " . $item->status . ")"}}</td>
                     </tr>
                 @endforeach
-                @endif
+                @endforeach
                 </tbody>
             </table>
         </div>

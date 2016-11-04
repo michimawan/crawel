@@ -8,20 +8,20 @@ class TagTest extends BaseModelTest
 	public function test_syncStories()
 	{
 		$stories = factory(Story::class, 2)->create();
-		$storyIds = $stories->pluck('pivotal_id')->all();
+		$storyIds = $stories->pluck('id')->all();
 
 		$tag = factory(Tag::class)->create();
+		$this->assertEquals(0, $tag->stories()->count());
 
 		$tag->syncStories($storyIds);
 
-		$this->assertEquals(2, $tag->stories->count());
+		$this->assertEquals(2, $tag->stories()->count());
 		$this->assertEquals(2, $tag->cached_stories->count());
 	}
 
 	public function test_syncStories_when_story_is_not_persist()
 	{
-		$stories = factory(Story::class, 2)->make();
-		$storyIds = $stories->pluck('pivotal_id')->all();
+		$storyIds = [100000, 999999];
 
 		$tag = factory(Tag::class)->create();
 

@@ -24,21 +24,12 @@ class Tag extends Model
     /**
      * method section
      */
-    public function syncStories($storyId = []) {
-        $ids = [];
-        $storyId = array_filter($storyId, function($c){
+    public function syncStories($storyIds = []) {
+        $storyIds = array_filter($storyIds, function($c){
             return !empty($c);
         });
 
-        foreach ($storyId as $story) {
-            $tag = Story::where('pivotal_id', $story)->first();
-
-            if ($tag) {
-                $ids[] = $tag->id;
-            }
-        }
-
-        $this->stories()->sync($ids);
+        $this->stories()->sync($storyIds);
         $this->cached_stories = $this->stories()->get();
         $this->save();
     }

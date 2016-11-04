@@ -3,7 +3,9 @@ namespace App\lib;
 
 use Illuminate\Database\QueryException;
 use Carbon\Carbon;
+use Log;
 
+use App\Models\Story;
 use App\Lib\Helper;
 use App\Models\Tag;
 
@@ -16,16 +18,26 @@ class TagRepository
             $tag->code = $greenTag['greenTagId'];
             $tag->timing = $greenTag['greenTagTiming'];
             $tag->project = $project;
-            $date = Carbon::today();
-            $storedDate = Helper::sanitizeDate($date, ' ');
-            try {
-                $tag->save();
-            } catch(QueryException $e) {
-                $tag = Tag::where('code', $greenTag['greenTagId'])->first();
+
+            $ids = $this->getStoryIds($greenTag['stories']);
+            if (count($ids)) {
+                try {
+                    $tag->save();
+                } catch(QueryException $e) {
+                    $tag = Tag::where('code', $greenTag['greenTagId'])->where('project', $project)->first();
+                    Log::info($e->getMessage());
+                    Log::info($e->getTraceAsString());
+                }
+                $tag->syncStories($ids);
             }
-            $tag->syncStories($greenTag['stories']);
         }
 	}
+
+    private function getStoryIds($pivotalIds = [])
+    {
+        $stories = Story::whereIn('pivotal_id', $pivotalIds)->get();
+        return $stories->pluck('id')->all();
+    }
 
     public function getByDate($date = null)
     {

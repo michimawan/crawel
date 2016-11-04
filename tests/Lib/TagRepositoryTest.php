@@ -38,7 +38,25 @@ class TagRepositoryTest extends BaseLibTest
 
         $this->assertEquals($tagCount + 2, Tag::count());
         $this->assertEquals(5, Tag::where('code', '#1587')->first()->stories->count());
-        $this->assertEquals($this->stories1->pluck('id')->all(), Tag::where('code', '#1587')->first()->stories->pluck('id')->all());
+
+        $expected = $this->stories1->sortBy('id')->pluck('id')->all();
+        $results = Tag::where('code', '#1587')->first()->stories->sortBy('id')->pluck('id')->all();
+        $this->assertEquals($expected, $results);
+    }
+
+    public function test_store_dont_store_when_story_ids_is_not_persisted()
+    {
+        $data = [
+            '#1586 (Oct 20, 2016 5:23:39 PM)' => [
+                'greenTagId' => '#1585',
+                'greenTagTiming' => 'Oct 20, 2016 5:23:39 PM',
+                'stories' => [1000000, 9999999]
+            ]
+        ];
+        $tagCount = Tag::count();
+        $tagRepo = new TagRepository();
+        $tagRepo->store('foo', $data);
+        $this->assertEquals($tagCount, Tag::count());
     }
 
     public function test_store_same_greenTag_not_throw_exception_and_no_duplicating_row()
@@ -48,6 +66,15 @@ class TagRepositoryTest extends BaseLibTest
         $tagCount = Tag::count();
         $tagRepo->store('foo', $this->data);
         $this->assertEquals($tagCount, Tag::count());
+    }
+
+    public function test_store_not_override_greenTagId_from_other_workspace()
+    {
+        $tagRepo = new TagRepository();
+        $tagRepo->store('foo', $this->data);
+        $tagCount = Tag::count();
+        $tagRepo->store('bar', $this->data);
+        $this->assertEquals($tagCount + 2, Tag::count());
     }
 
     public function test_store_same_greenTag_should_update_stories_related_to_it()

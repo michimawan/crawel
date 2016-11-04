@@ -75,7 +75,7 @@ class StoryRepositoryTest extends BaseLibTest
 
 		$story = new StoryRepository();
 		$story->store($this->responses);
-		$this->assertEquals(4, Story::count());
+		$this->assertEquals($storyCount + 4, Story::count());
 	}
 
 
@@ -85,6 +85,6 @@ class StoryRepositoryTest extends BaseLibTest
 
 		$story = new StoryRepository();
 		$story->store([]);
-		$this->assertEquals(0, Story::count());
+		$this->assertEquals($storyCount, Story::count());
 	}
 }
