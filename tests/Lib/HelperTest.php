@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use App\Lib\Helper;
 use App\Models\Story;
+use App\Models\Tag;
 
 class HelperTest extends BaseLibTest
 {
@@ -64,22 +65,22 @@ STRING;
 
     public function test_grouping()
     {
-        $stories = factory(Story::class, 2)->make([
-            'project_id' => 2
+        $stories = factory(Tag::class, 2)->make([
+            'project' => 'foo'
         ]);
         $stories->push(
-            factory(Story::class)->make([
-                'project_id' => 3
+            factory(Tag::class)->make([
+                'project' => 'foo2'
             ])
         );
         $stories->push(
-            factory(Story::class)->make([
-                'project_id' => 4
+            factory(Tag::class)->make([
+                'project' => 'foo2'
             ])
         );
         $stories->push(
-            factory(Story::class)->make([
-                'project_id' => 5
+            factory(Tag::class)->make([
+                'project' => 'foo'
             ])
         );
 
@@ -95,8 +96,8 @@ STRING;
         ];
 
         $expected = [
-            'foo' => $stories->whereIn('project_id', [2, 4]),
-            'foo2' => $stories->whereIn('project_id', [3, 5]),
+            'foo' => $stories->where('project', 'foo'),
+            'foo2' => $stories->where('project', 'foo2'),
         ];
 
         $this->assertEquals(collect($expected), (new Helper)->grouping($projects, $stories));

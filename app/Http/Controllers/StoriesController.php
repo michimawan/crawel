@@ -15,23 +15,22 @@ use App\Lib\GoogleSheet;
 use App\Lib\Helper;
 use App\Lib\Curler;
 use Carbon\Carbon;
-use App\Story;
 use Config;
 
 class StoriesController extends Controller
 {
 	public function index(Request $request)
 	{
-		$date = $request->input('date') ? $request->input('date') : '';
+		$date = $request->input('date') ? $request->input('date') : null;
 
 		$projects = Config::get('pivotal.projects');
 		$projects = (new Helper)->reverseProjectIds($projects);
-		$stories = (new StoryRepository)->getByDate($date);
+		$tag = (new TagRepository)->getByDate($date);
 
-		$stories = (new Helper)->grouping($projects, $stories);
+		$tag = (new Helper)->grouping($projects, $tag);
 
 		return view('stories.index', [
-			'stories' => $stories,
+			'tag' => $tag,
 			'projects' => $projects,
 		]);
 	}
@@ -64,16 +63,6 @@ class StoriesController extends Controller
 		$responses = (new Curler())->curl($project, $ids, $curl);
 		(new StoryRepository())->store($responses);
         (new TagRepository())->store($project, $greenTags);
-		// try {
-		// 	$newRow = (new Helper())->prepareForSheet($project, $responses);
-		// 	$client = new GoogleClient;
-		// 	$googleSheet = new GoogleSheet();
-		// 	$client = $googleSheet->setClient($client, Config::get('google.credentials'));
-		// 	$googleSheet->sendToSpreadSheet($client, $newRow);
-		// } catch(Exception $e) {
-		// 	Log::info('Failed send to spreadsheet caused by: ' . $e->getMessage());
-		// 	Log::info($e->getTraceAsString());
-		// }
 
 		return redirect()->route('stories.index');
 	}

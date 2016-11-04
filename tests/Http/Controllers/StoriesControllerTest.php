@@ -1,59 +1,46 @@
 <?php
 
 use Curl\Curl;
-use App\Story;
+use App\Models\Tag;
 use Carbon\Carbon;
 use App\Lib\Helper;
 
 class StoriesControllerTest extends BaseControllerTest
 {
-    public function xtest_index_get_todays_stories()
+    public function test_index_get_todays_tag()
     {
         $projects = (new Helper())->reverseProjectIds(Config::get('pivotal.projects'));
 
-        $yesterdayDatas = factory(Story::class, 3)->create([
-            'last_updated_at' => json_encode([Helper::sanitizeDate(Carbon::today()->subDay()->toDateTimeString(), ' ')]),
+        $yesterdayDatas = factory(Tag::class, 3)->create([
+            'project' => 'foo',
+            'created_at' => Carbon::now()->subDay()
         ]);
-        $todayDatas = factory(Story::class, 3)->create();
 
-        foreach($projects as $projectName => $project) {
-            $ids = array_keys($project);
-            foreach($ids as $id) {
-                $todayDatas->push(factory(Story::class)->create([
-                    'project_id' => $id,
-                ]));
-            }
-        }
-        $stories = (new Helper)->grouping($projects, $todayDatas);
+        $todayDatas = factory(Tag::class, 3)->create([
+            'project' => 'foo'
+        ]);
+        $tag = (new Helper)->grouping($projects, $todayDatas);
 
         $route = route('stories.index');
         $response = $this->get($route, [])->response;
 
         $this->assertResponseOk();
         $this->assertEquals('stories.index', $response->original->getName());
-        $this->assertViewHas(['stories', 'projects']);
-        $this->assertEquals($stories->pluck('id'), $response->original->stories->pluck('id'));
+        $this->assertViewHas(['tag', 'projects']);
+        $this->assertEquals($tag->pluck('id'), $response->original->tag->pluck('id'));
         $this->assertEquals($projects, $response->original->projects);
     }
 
-    public function xtest_index_get_yesterday_stories()
+    public function test_index_get_yesterday_tag()
     {
         $projects = (new Helper())->reverseProjectIds(Config::get('pivotal.projects'));
 
         $yesterdayDate = Helper::sanitizeDate(Carbon::today()->subDay()->toDateTimeString(), ' ');
-        $yesterdayDatas = factory(Story::class, 3)->create([
-            'last_updated_at' => json_encode([$yesterdayDate]),
+        $yesterdayDatas = factory(Tag::class, 3)->create([
+            'project' => 'foo'
         ]);
 
-        foreach($projects as $projectName => $project) {
-            $ids = array_keys($project);
-            foreach($ids as $id) {
-                factory(Story::class)->create([
-                    'project_id' => $id,
-                ]);
-            }
-        }
-        $stories = (new Helper)->grouping($projects, $yesterdayDatas);
+        $tag = (new Helper)->grouping($projects, $yesterdayDatas);
 
         $route = route('stories.index');
         $response = $this->get($route, [
@@ -62,7 +49,7 @@ class StoriesControllerTest extends BaseControllerTest
 
         $this->assertResponseOk();
         $this->assertEquals('stories.index', $response->original->getName());
-        $this->assertEquals($stories->pluck('id'), $response->original->stories->pluck('id'));
+        $this->assertEquals($tag->pluck('id'), $response->original->tag->pluck('id'));
     }
 
     public function test_create()

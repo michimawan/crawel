@@ -12,7 +12,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                @foreach($stories as $i => $item)
+                @if (isset($tag->stories))
+                @foreach($tag->stories as $i => $item)
                     <tr>
                         <td>{{ $i+1 }}</td>
                         <td>{{ "[#" . $item->pivotal_id . "]" }}</td>
@@ -24,6 +25,7 @@
                         <td>{{ "(". $type .", " . $item->status . ")"}}</td>
                     </tr>
                 @endforeach
+                @endif
                 </tbody>
             </table>
         </div>

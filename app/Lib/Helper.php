@@ -100,7 +100,7 @@ class Helper
 		foreach($groups as $groupName => $groups) {
 
 			$projectIds = array_keys($groups);
-			$filteredStories = $stories->whereIn('project_id', $projectIds);
+			$filteredStories = $stories->where('project', $groupName);
 
 			$collection->put($groupName, $filteredStories);
 		}
