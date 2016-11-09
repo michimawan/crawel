@@ -14,7 +14,7 @@
 use App\Lib\Helper;
 use Carbon\Carbon;
 
-$factory->define(App\Crawler::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\Story::class, function (Faker\Generator $faker) {
 	$date = Helper::sanitizeDate(Carbon::today()->toDateTimeString(), ' ');
 
     return [
@@ -23,6 +23,5 @@ $factory->define(App\Crawler::class, function (Faker\Generator $faker) {
         'point' => $faker->randomDigit,
         'project_id' => $faker->randomNumber,
         'story_type' => $faker->word,
-        'last_updated_at' => json_encode([$date]),
     ];
 });

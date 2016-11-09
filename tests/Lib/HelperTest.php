@@ -2,7 +2,8 @@
 
 use Carbon\Carbon;
 use App\Lib\Helper;
-use App\Crawler;
+use App\Models\Story;
+use App\Models\Tag;
 
 class HelperTest extends BaseLibTest
 {
@@ -64,22 +65,22 @@ STRING;
 
     public function test_grouping()
     {
-        $stories = factory(Crawler::class, 2)->make([
-            'project_id' => 2
+        $stories = factory(Tag::class, 2)->make([
+            'project' => 'foo'
         ]);
         $stories->push(
-            factory(Crawler::class)->make([
-                'project_id' => 3
+            factory(Tag::class)->make([
+                'project' => 'foo2'
             ])
         );
         $stories->push(
-            factory(Crawler::class)->make([
-                'project_id' => 4
+            factory(Tag::class)->make([
+                'project' => 'foo2'
             ])
         );
         $stories->push(
-            factory(Crawler::class)->make([
-                'project_id' => 5
+            factory(Tag::class)->make([
+                'project' => 'foo'
             ])
         );
 
@@ -95,8 +96,8 @@ STRING;
         ];
 
         $expected = [
-            'foo' => $stories->whereIn('project_id', [2, 4]),
-            'foo2' => $stories->whereIn('project_id', [3, 5]),
+            'foo' => $stories->where('project', 'foo'),
+            'foo2' => $stories->where('project', 'foo2'),
         ];
 
         $this->assertEquals(collect($expected), (new Helper)->grouping($projects, $stories));
@@ -165,5 +166,193 @@ STRING;
         $date = '2016-11-13T03:49:01Z';
         $expected = '2016-11-13';
         $this->assertEquals($expected, (new Helper)->sanitizeDate($date, 'T'));
+    }
+
+    public function test_parseGreenTag()
+    {
+        $text = <<<TEXT
+#1587 (Oct 20, 2016 5:23:39 PM)
+
+[finished #132548327][klikdokter] list of sub-channels from Rubrik — pair+himawan+pinto / githubweb
+#1586 (Oct 20, 2016 4:42:04 PM)
+
+[ref #130087583] change <?php to <?hh for files containing xhp — pair+ata+fadhil+nofriandi / githubweb
+[FIX TEST] being freed from the seeder — pair+himawan+pinto / githubweb
+#1583 (Oct 19, 2016 6:41:41 PM)
+
+[ref #131616147] change title: trending topik — pair+himawan+pinto / githubweb
+#1582 (Oct 18, 2016 7:36:11 PM)
+
+[finished #132651549] Disable responsive feature on content promotion — pair+enang / githubweb
+TEXT;
+
+        $expected = [
+            '#1587 (Oct 20, 2016 5:23:39 PM)' => [
+                'greenTagId' => '#1587',
+                'greenTagTiming' => 'Oct 20, 2016 5:23:39 PM',
+            ],
+            '#1586 (Oct 20, 2016 4:42:04 PM)' => [
+                'greenTagId' => '#1586',
+                'greenTagTiming' => 'Oct 20, 2016 4:42:04 PM',
+            ],
+            '#1583 (Oct 19, 2016 6:41:41 PM)' => [
+                'greenTagId' => '#1583',
+                'greenTagTiming' => 'Oct 19, 2016 6:41:41 PM',
+            ],
+            '#1582 (Oct 18, 2016 7:36:11 PM)' => [
+                'greenTagId' => '#1582',
+                'greenTagTiming' => 'Oct 18, 2016 7:36:11 PM',
+            ],
+        ];
+        $this->assertEquals($expected, Helper::parseGreenTag($text));
+    }
+
+    public function test_add_stories_to_green_tag_data()
+    {
+        $text = <<<TEXT
+#1587 (Oct 20, 2016 5:23:39 PM)
+
+[finished #111][klikdokter] list of sub-channels from Rubrik — pair+himawan+pinto / githubweb
+#1586 (Oct 20, 2016 4:42:04 PM)
+
+[ref #211] change <?php to <?hh for files containing xhp — pair+ata+fadhil+nofriandi / githubweb
+[ref #212] remove all type hints in properties — pair+ata+fadhil+nofriandi / githubweb
+[ref #213] remove nullable type hints — pair+ata+fadhil+nofriandi / githubweb
+[ref #214] temporarily comment out scalar type hints — pair+ata+fadhil+nofriandi / githubweb
+[ref #215] add utility scripts — pair+ata+fadhil+nofriandi / githubweb
+#1583 (Oct 19, 2016 6:41:41 PM)
+
+[#311][klikdokter] importer data health topics beserta author dan — firodj / githubweb
+[#312][klikdokter] add health topcis slide as multi page health — firodj / githubweb
+[#313][klikdokter] remove nonsense KADE_DOMAIN env var and — firodj / githubweb
+[finished #314][Consumption] bash cache for related article — pair+ardhan+burhan / githubweb
+#1582 (Oct 18, 2016 7:36:11 PM)
+
+[finished #411] Implement Feature Toggle Line Tag Fallback — pair+byan+yahya / githubweb
+[finished #412] Disable responsive feature on content promotion — pair+enang / githubweb
+TEXT;
+
+        
+        $greenTags = [
+            '#1587 (Oct 20, 2016 5:23:39 PM)' => [
+            ],
+            '#1586 (Oct 20, 2016 4:42:04 PM)' => [
+            ],
+            '#1583 (Oct 19, 2016 6:41:41 PM)' => [
+            ],
+            '#1582 (Oct 18, 2016 7:36:11 PM)' => [
+            ],
+        ];
+        $expected = [
+            '#1587 (Oct 20, 2016 5:23:39 PM)' => [
+                'stories' => [111]
+            ],
+            '#1586 (Oct 20, 2016 4:42:04 PM)' => [
+                'stories' => [211, 212, 213, 214, 215]
+            ],
+            '#1583 (Oct 19, 2016 6:41:41 PM)' => [
+                'stories' => [311, 312, 313, 314]
+            ],
+            '#1582 (Oct 18, 2016 7:36:11 PM)' => [
+                'stories' => [411, 412]
+            ],
+        ];
+        $this->assertEquals($expected, Helper::addStoriesToGreenTag($greenTags, $text));
+    }
+
+    public function test_add_stories_to_green_tag_data_when_greenTags_has_no_stories()
+    {
+        $text = <<<TEXT
+#1587 (Oct 20, 2016 5:23:39 PM)
+
+[finished #111][klikdokter] list of sub-channels from Rubrik — pair+himawan+pinto / githubweb
+#1586 (Oct 20, 2016 4:42:04 PM)
+
+[ref #211] change <?php to <?hh for files containing xhp — pair+ata+fadhil+nofriandi / githubweb
+[ref #212] remove all type hints in properties — pair+ata+fadhil+nofriandi / githubweb
+[ref #213] remove nullable type hints — pair+ata+fadhil+nofriandi / githubweb
+[ref #214] temporarily comment out scalar type hints — pair+ata+fadhil+nofriandi / githubweb
+[ref #215] add utility scripts — pair+ata+fadhil+nofriandi / githubweb
+#1583 (Oct 19, 2016 6:41:41 PM)
+
+[#311][klikdokter] importer data health topics beserta author dan — firodj / githubweb
+[#312][klikdokter] add health topcis slide as multi page health — firodj / githubweb
+[#313][klikdokter] remove nonsense KADE_DOMAIN env var and — firodj / githubweb
+[finished #314][Consumption] bash cache for related article — pair+ardhan+burhan / githubweb
+#1582 (Oct 18, 2016 7:36:11 PM)
+
+TEXT;
+
+        
+        $greenTags = [
+            '#1587 (Oct 20, 2016 5:23:39 PM)' => [
+            ],
+            '#1586 (Oct 20, 2016 4:42:04 PM)' => [
+            ],
+            '#1583 (Oct 19, 2016 6:41:41 PM)' => [
+            ],
+            '#1582 (Oct 18, 2016 7:36:11 PM)' => [
+            ],
+        ];
+        $expected = [
+            '#1587 (Oct 20, 2016 5:23:39 PM)' => [
+                'stories' => [111]
+            ],
+            '#1586 (Oct 20, 2016 4:42:04 PM)' => [
+                'stories' => [211, 212, 213, 214, 215]
+            ],
+            '#1583 (Oct 19, 2016 6:41:41 PM)' => [
+                'stories' => [311, 312, 313, 314]
+            ],
+            '#1582 (Oct 18, 2016 7:36:11 PM)' => [
+                'stories' => []
+            ],
+        ];
+        $this->assertEquals($expected, Helper::addStoriesToGreenTag($greenTags, $text));
+    }
+
+    public function test_parseText()
+    {
+        $text = <<<TEXT
+#1587 (Oct 20, 2016 5:23:39 PM)
+
+[finished #111][klikdokter] list of sub-channels from Rubrik — pair+himawan+pinto / githubweb
+#1586 (Oct 20, 2016 4:42:04 PM)
+
+[ref #211] change <?php to <?hh for files containing xhp — pair+ata+fadhil+nofriandi / githubweb
+[ref #212] remove all type hints in properties — pair+ata+fadhil+nofriandi / githubweb
+[ref #213] remove nullable type hints — pair+ata+fadhil+nofriandi / githubweb
+[ref #214] temporarily comment out scalar type hints — pair+ata+fadhil+nofriandi / githubweb
+[ref #215] add utility scripts — pair+ata+fadhil+nofriandi / githubweb
+#1583 (Oct 19, 2016 6:41:41 PM)
+
+[#311][klikdokter] importer data health topics beserta author dan — firodj / githubweb
+[#312][klikdokter] add health topcis slide as multi page health — firodj / githubweb
+[#313][klikdokter] remove nonsense KADE_DOMAIN env var and — firodj / githubweb
+[finished #314][Consumption] bash cache for related article — pair+ardhan+burhan / githubweb
+
+TEXT;
+
+        $greenTags = [
+            '#1587 (Oct 20, 2016 5:23:39 PM)' => [
+                'greenTagId' => '#1587',
+                'greenTagTiming' => 'Oct 20, 2016 5:23:39 PM',
+                'stories' => [111]
+            ],
+            '#1586 (Oct 20, 2016 4:42:04 PM)' => [
+                'greenTagId' => '#1586',
+                'greenTagTiming' => 'Oct 20, 2016 4:42:04 PM',
+                'stories' => [211, 212, 213, 214, 215]
+            ],
+            '#1583 (Oct 19, 2016 6:41:41 PM)' => [
+                'greenTagId' => '#1583',
+                'greenTagTiming' => 'Oct 19, 2016 6:41:41 PM',
+                'stories' => [311, 312, 313, 314]
+            ],
+        ];
+
+        $storyIds = [111, 211, 212, 213, 214, 215, 311, 312, 313, 314];
+        $expected = [$greenTags, $storyIds];
+        $this->assertEquals($expected, Helper::parseText($text));
     }
 }

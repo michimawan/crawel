@@ -1,0 +1,38 @@
+*** Settings ***
+Suite Setup           Open Browser      	${SERVER}       ${BROWSER}
+Suite Teardown        Close Browser
+Test Setup 			  Get Content
+Resource			  resource.txt
+
+*** Variables ***
+${data}
+
+*** Test Cases ***
+Test Case Input Story
+	Goto Fill Form
+	Filling Story 				${data}
+	Submit Values
+	Verify Today Story
+
+*** Keywords ***
+Get Content
+	${data}=					Get File		sample_klikdokter.txt
+	Log							${data}
+
+Goto Fill Form
+	Go To 						${SERVER}/create
+	Sleep						1
+	Location Should Be 			${SERVER}/create
+	Page Should Contain			Choose Input Project
+
+Filling Story
+	[Arguments]					${story}
+	Input Text					stories			${story}
+	Sleep						1
+
+Submit Values
+	Click Element				sizzle=.btn.btn-primary
+	Go Back
+
+Verify Today Story
+	Wait Until Page Contains Element		sizzle=.table.table-bordered.table-striped.table-hover

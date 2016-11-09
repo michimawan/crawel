@@ -12,16 +12,16 @@
 */
 
 Route::get('/', [
-	'as' => 'crawler.index',
-	'uses' => 'CrawlersController@index'
+	'as' => 'stories.index',
+	'uses' => 'StoriesController@index'
 ]);
 
 Route::get('/create', [
-	'as' => 'crawler.create',
-	'uses' => 'CrawlersController@create'
+	'as' => 'stories.create',
+	'uses' => 'StoriesController@create'
 ]);
 
 Route::post('/store', [
-	'as' => 'crawler.store',
-	'uses' => 'CrawlersController@store'
+	'as' => 'stories.store',
+	'uses' => 'StoriesController@store'
 ]);
