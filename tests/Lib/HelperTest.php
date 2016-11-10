@@ -65,20 +65,20 @@ STRING;
 
     public function test_grouping()
     {
-        $stories = factory(Tag::class, 2)->make([
+        $greenTags = factory(Tag::class, 2)->make([
             'project' => 'foo'
         ]);
-        $stories->push(
+        $greenTags->push(
             factory(Tag::class)->make([
                 'project' => 'foo2'
             ])
         );
-        $stories->push(
+        $greenTags->push(
             factory(Tag::class)->make([
                 'project' => 'foo2'
             ])
         );
-        $stories->push(
+        $greenTags->push(
             factory(Tag::class)->make([
                 'project' => 'foo'
             ])
@@ -96,11 +96,11 @@ STRING;
         ];
 
         $expected = [
-            'foo' => $stories->where('project', 'foo'),
-            'foo2' => $stories->where('project', 'foo2'),
+            'foo' => $greenTags->where('project', 'foo'),
+            'foo2' => $greenTags->where('project', 'foo2'),
         ];
 
-        $this->assertEquals(collect($expected), (new Helper)->grouping($projects, $stories));
+        $this->assertEquals(collect($expected), (new Helper)->grouping($projects, $greenTags));
     }
 
     public function test_prepareForSheet_return_correct_array()

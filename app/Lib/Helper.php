@@ -93,14 +93,14 @@ class Helper
 		return $projectIds;
 	}
 
-	public function grouping($groups, $stories) : Collection
+	public function grouping($groups, $greenTags) : Collection
 	{
 		$collection = collect();
 
 		foreach($groups as $groupName => $groups) {
 
 			$projectIds = array_keys($groups);
-			$filteredStories = $stories->where('project', $groupName);
+			$filteredStories = $greenTags->where('project', $groupName);
 
 			$collection->put($groupName, $filteredStories);
 		}
