@@ -66,4 +66,9 @@ class StoriesController extends Controller
 
 		return redirect()->route('stories.index');
 	}
+
+	public function greentag(Request $request)
+	{
+		return view('stories.greentag');
+	}
 }

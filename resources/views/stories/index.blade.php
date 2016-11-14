@@ -14,11 +14,8 @@
 {!! Form::submit('Submit', ['class' => 'btn btn-info btn-sm']) !!}
 {!! Form::close() !!}
 <div>
-<div role="presentation" class="divider"><div>
-
-<div role="presentation" class="divider"><div>
 <ul class="nav navbar-right">
-    <a href="{{ url('/create') }}">
+    <a href="{{ url('/greentag') }}">
         <button type="button" class="btn btn-danger btn-sm">Create daily email</button>
     </a>
 </ul>  

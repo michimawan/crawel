@@ -21,6 +21,11 @@ Route::get('/create', [
 	'uses' => 'StoriesController@create'
 ]);
 
+Route::get('/greentag', [
+	'as' => 'stories.greentag',
+	'uses' => 'StoriesController@greentag'
+]);
+
 Route::post('/store', [
 	'as' => 'stories.store',
 	'uses' => 'StoriesController@store'
