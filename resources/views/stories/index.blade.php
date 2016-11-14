@@ -4,16 +4,6 @@
 {{ Html::style('css/jquery-ui.min.css') }}
 
 <div class="container">
-{!! Form::open([
-  'route' => 'stories.index',
-  'method' => 'GET',
-  'class' => '']) !!}
-<!-- {!! Form::date('date', \Carbon\Carbon::now(), ['class' => 'btn-small', 'id' => 'datepicker']) !!}
- -->{!! Form::text('date', '', ['class' => 'btn-small', 'id' => 'datepicker']) !!}
-
-{!! Form::submit('Submit', ['class' => 'btn btn-info btn-sm']) !!}
-{!! Form::close() !!}
-<div>
 <ul class="nav navbar-right">
     <a href="{{ url('/greentag') }}">
         <button type="button" class="btn btn-danger btn-sm">Create daily email</button>
@@ -37,6 +27,15 @@
 
   <!-- Tab panes -->
   <div class="tab-content">
+    
+    {!! Form::open([
+      'route' => 'stories.index',
+      'method' => 'GET',
+      'class' => '']) !!}
+      {!! Form::text('date', '', ['class' => 'btn-small', 'id' => 'datepicker']) !!}
+      {!! Form::submit('Submit', ['class' => 'btn btn-info btn-sm']) !!}
+    {!! Form::close() !!}
+
     @php
     $active = ' active';
     @endphp

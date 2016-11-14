@@ -4,14 +4,6 @@
 {{ Html::style('css/jquery-ui.min.css') }}
 
 <div class="container">
-{!! Form::open([
-  'route' => 'stories.index',
-  'method' => 'GET',
-  'class' => '']) !!}
-{!! Form::text('date', '', ['class' => 'btn-small', 'id' => 'datepicker']) !!}
-
-{!! Form::submit('Submit', ['class' => 'btn btn-info btn-sm']) !!}
-{!! Form::close() !!}
 
 <a href="{{ url('/greentag') }}">
     <button type="button" class="btn btn-danger btn-sm" >Sent to draft email</button>
@@ -27,6 +19,14 @@
         <div class="tab-content">
           <div class="tab-pane active" id="a">
             <h3>Choose daily greentag</h3>
+            {!! Form::open([
+              'route' => 'stories.index',
+              'method' => 'GET',
+              'class' => '']) !!}
+            {!! Form::text('date', '', ['class' => 'btn-small', 'id' => 'datepicker']) !!}
+
+            {!! Form::submit('Submit', ['class' => 'btn btn-info btn-sm']) !!}
+            {!! Form::close() !!}
             <ul class="list-group pull-left">
               <li class="list-group-item">
                 <h4>Greentag 1 &nbsp; &nbsp;
@@ -46,18 +46,26 @@
           </div>
           <div class="tab-pane" id="b">
             <h3>Choose daily greentag b</h3>
+            {!! Form::open([
+              'route' => 'stories.index',
+              'method' => 'GET',
+              'class' => '']) !!}
+            {!! Form::text('date', '', ['class' => 'btn-small', 'id' => 'datepicker']) !!}
+
+            {!! Form::submit('Submit', ['class' => 'btn btn-info btn-sm']) !!}
+            {!! Form::close() !!}
             <ul class="list-group pull-left">
               <li class="list-group-item">
                 <h4>Greentag 1 &nbsp; &nbsp;
                 	<span>         	
-					  <input type="checkbox">
+					           <input type="checkbox">
                 	</span>
             	</h4>
               </li>
               <li class="list-group-item">
                 <h4>Greentag 2 &nbsp; &nbsp;
                 	<span>         	
-					  <input type="checkbox">
+					           <input type="checkbox">
                 	</span>
             	</h4>
               </li>
@@ -65,6 +73,14 @@
           </div>
           <div class="tab-pane" id="c">
             <h3>Choose daily greentag c</h3>
+            {!! Form::open([
+              'route' => 'stories.index',
+              'method' => 'GET',
+              'class' => '']) !!}
+            {!! Form::text('date', '', ['class' => 'btn-small', 'id' => 'datepicker']) !!}
+
+            {!! Form::submit('Submit', ['class' => 'btn btn-info btn-sm']) !!}
+            {!! Form::close() !!}
             <ul class="list-group pull-left">
               <li class="list-group-item">
                 <h4>Greentag 1 &nbsp; &nbsp;
@@ -76,7 +92,7 @@
               <li class="list-group-item">
                 <h4>Greentag 2 &nbsp; &nbsp;
                 	<span>         	
-					  <input type="checkbox">
+					           <input type="checkbox">
                 	</span>
             	</h4>
               </li>
