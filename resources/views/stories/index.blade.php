@@ -4,38 +4,27 @@
 {{ Html::style('css/jquery-ui.min.css') }}
 
 <div class="container">
-<ul class="nav navbar-right">
-    <a href="{{ url('/greentag') }}">
-        <button type="button" class="btn btn-danger btn-sm">Create daily email</button>
+<div class="row">
+{!! Form::open([
+  'route' => 'stories.index',
+  'method' => 'GET',
+  'class' => '']) !!}
+  {!! Form::text('date', '', ['class' => 'btn-small', 'id' => 'datepicker']) !!}
+  {!! Form::submit('Submit', ['class' => 'btn btn-info btn-sm']) !!}
+{!! Form::close() !!}
+</div>
+<div class="row">
+  <ul class="nav navbar-right">
+    <a href="{{ route('mails.create') }}">
+      <button type="button" class="btn btn-danger btn-sm">Create daily email</button>
     </a>
-</ul>  
-<div role="presentation" class="divider"><div>
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
-    @php
-    $active = 'class="active"';
-    @endphp
-    @foreach($projects as $projectName => $projectIds)
-      <li role="presentation"{!! $active !!}>
-        <a href="#{{ $projectName }}" aria-controls="{{ $projectName }}" role="tab" data-toggle="tab">{{ $projectName }}</a>
-      </li>
-      @php
-      $active = '';
-      @endphp
-    @endforeach
   </ul>
-
+  <!-- Nav tabs -->
+  @include('elements.navtabs', [
+    'projects' => $projects,
+  ])
   <!-- Tab panes -->
   <div class="tab-content">
-    
-    {!! Form::open([
-      'route' => 'stories.index',
-      'method' => 'GET',
-      'class' => '']) !!}
-      {!! Form::text('date', '', ['class' => 'btn-small', 'id' => 'datepicker']) !!}
-      {!! Form::submit('Submit', ['class' => 'btn btn-info btn-sm']) !!}
-    {!! Form::close() !!}
-
     @php
     $active = ' active';
     @endphp
@@ -52,6 +41,7 @@
         @endphp
     @endforeach
   </div>
+</div>
 </div>
 
 </div>

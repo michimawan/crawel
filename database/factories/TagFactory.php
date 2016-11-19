@@ -15,7 +15,6 @@ use App\Lib\Helper;
 use Carbon\Carbon;
 
 $factory->define(App\Models\Tag::class, function (Faker\Generator $faker) {
-	$date = Helper::sanitizeDate(Carbon::today()->toDateTimeString(), ' ');
 
     return [
         'code' => $faker->randomNumber + rand(10, 100),

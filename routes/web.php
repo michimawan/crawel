@@ -16,17 +16,22 @@ Route::get('/', [
 	'uses' => 'StoriesController@index'
 ]);
 
-Route::get('/create', [
+Route::get('/stories/create', [
 	'as' => 'stories.create',
 	'uses' => 'StoriesController@create'
 ]);
 
-Route::get('/greentag', [
-	'as' => 'stories.greentag',
-	'uses' => 'StoriesController@greentag'
-]);
-
-Route::post('/store', [
+Route::post('/stories/store', [
 	'as' => 'stories.store',
 	'uses' => 'StoriesController@store'
+]);
+
+Route::get('/mails/create', [
+    'as' => 'mails.create',
+    'uses' => 'MailsController@create'
+]);
+
+Route::post('/mails/store', [
+    'as' => 'mails.store',
+    'uses' => 'MailsController@store'
 ]);
