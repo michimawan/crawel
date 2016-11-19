@@ -1,41 +1,46 @@
 <div class="container">
-<h3>Today {{ $projectName }} Story</h3>
+<h1>Today {{ $projectName }} Story</h1>
 <div class="table">
     <table class="table table-bordered table-striped table-hover">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>GreenTag Id</th>
-                <th>Story Id</th>
-                <th>Project Name</th>
-                <th>Title</th>
-                <th>Story type & Points</th>
-                <th>Edit</th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php $counter = 1; ?>
         @foreach($tag as $greenTag)
         @foreach($greenTag->stories as $i => $item)
-            <tr>
-                <td>{{ $counter }}</td>
-                <td>{{ $greenTag->code }}</td>
-                <td>{{ "[#" . $item->pivotal_id . "]" }}</td>
-                <td>{{ isset($projectIds[$item->project_id]) ? $projectIds[$item->project_id] : "" }}</td>
-                <td>{{ $item->title }}</td>
-                <?php
-                $type = $item->story_type == 'feature' ? $item->point . ' point(s)' : $item->story_type;
-                ?>
-                <td>{{ "(". $type .", " . $item->status . ")"}}</td>
-                <td> 
+        <div class="tab-content">
+            <li class="list-group-item">
+                <h4>Greentag &nbsp; &nbsp;
+                    <span>
+                        {{ $greenTag->code }}
+                    </span>
+                </h4>
+            </li>
+            <li class="list-group-item">
+                <h5> Story List &nbsp; &nbsp;
+                    <br>
+                    <?php $counter = 1; ?>
+                        <span>
+                            {{ $counter . "." }}
+                        </span>
+                    <?php $counter++; ?>
+                    {{ "[#" . $item->pivotal_id . "]" }}
+                    {{ isset($projectIds[$item->project_id]) ? $projectIds[$item->project_id] : "" }}
+                    <span class="box ellipsis">
+                        {{ $item->title }}
+                    </span>
+                    <?php
+                        $type = $item->story_type == 'feature' ? $item->point . ' points' : $item->story_type;
+                    ?>
+                    {{ "(". $type .", " . $item->status . ")"}}
+                    </br>
+                    <br>
                     <a href="{{ url('/greentag') }}">
-                        <button type="button" class="btn btn-default btn-lg">
+                        <button type="button" class="btn btn-default pull-right">
                             <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
                         </button>
                     </a>
-                </td>
-            </tr>
-        <?php $counter++; ?>
+                    </br>
+                <h5>
+            </li>
+        </div>
+        <tbody>
         @endforeach
         @endforeach
         </tbody>
