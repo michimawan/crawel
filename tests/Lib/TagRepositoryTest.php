@@ -13,9 +13,13 @@ class TagRepositoryTest extends BaseLibTest
     {
         parent::setUp();
 
-        $this->stories1 = factory(Story::class, 5)->create();
+        $this->stories1 = factory(Story::class, 5)->create([
+            'project_id' => 222
+        ]);
 
-        $this->stories2 = factory(Story::class, 3)->create();
+        $this->stories2 = factory(Story::class, 3)->create([
+            'project_id' => 333
+        ]);
         $this->data = [
             '#1587 (Oct 20, 2016 5:23:39 PM)' => [
                 'greenTagId' => '#1587',
@@ -30,7 +34,7 @@ class TagRepositoryTest extends BaseLibTest
         ];
     }
 
-    public function test_store()
+    public function test_stores()
     {
         $tagCount = Tag::count();
         $tagRepo = new TagRepository();
@@ -47,10 +51,31 @@ class TagRepositoryTest extends BaseLibTest
     public function test_store_dont_store_when_story_ids_is_not_persisted()
     {
         $data = [
-            '#1586 (Oct 20, 2016 5:23:39 PM)' => [
-                'greenTagId' => '#1585',
+            '#1581 (Oct 20, 2016 5:23:39 PM)' => [
+                'greenTagId' => '#1581',
                 'greenTagTiming' => 'Oct 20, 2016 5:23:39 PM',
                 'stories' => [1000000, 9999999]
+            ]
+        ];
+        $tagCount = Tag::count();
+        $tagRepo = new TagRepository();
+        $tagRepo->store('foo', $data);
+        $this->assertEquals($tagCount, Tag::count());
+    }
+
+    public function test_store_dont_store_when_story_ids_in_greenTag_is_not_in_the_project()
+    {
+        $story = factory(Story::class)->create([
+            'project_id' => 321222,
+        ]);
+        $story2 = factory(Story::class)->create([
+            'project_id' => 321333,
+        ]);
+        $data = [
+            '#1584 (Oct 20, 2016 5:23:39 PM)' => [
+                'greenTagId' => '#1584',
+                'greenTagTiming' => 'Oct 20, 2016 5:23:39 PM',
+                'stories' => [$story->pivotal_id, $story2->pivotal_id]
             ]
         ];
         $tagCount = Tag::count();
@@ -73,7 +98,19 @@ class TagRepositoryTest extends BaseLibTest
         $tagRepo = new TagRepository();
         $tagRepo->store('foo', $this->data);
         $tagCount = Tag::count();
-        $tagRepo->store('bar', $this->data);
+
+
+        $stories1 = factory(Story::class, 3)->create([
+            'project_id' => 321222,
+        ]);
+        $stories2 = factory(Story::class, 3)->create([
+            'project_id' => 321333,
+        ]);
+        $data = $this->data;
+        $data['#1587 (Oct 20, 2016 5:23:39 PM)']['stories'] = $stories1->pluck('pivotal_id')->all();
+        $data['#1586 (Oct 20, 2016 5:23:39 PM)']['stories'] = $stories2->pluck('pivotal_id')->all();
+
+        $tagRepo->store('bar', $data);
         $this->assertEquals($tagCount + 2, Tag::count());
     }
 
@@ -88,6 +125,7 @@ class TagRepositoryTest extends BaseLibTest
         ];
         $tagRepo = new TagRepository();
         $tagRepo->store('foo', $data);
+        $this->assertEquals(5, Tag::where('code', '#1585')->first()->stories->count());
 
         $tag = Tag::where('code', '#1585')->first();
         $storyCount = $tag->stories->count();

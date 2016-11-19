@@ -3,6 +3,7 @@ namespace App\lib;
 
 use Illuminate\Database\QueryException;
 use Carbon\Carbon;
+use Config;
 use Log;
 
 use App\Models\Story;
@@ -19,7 +20,7 @@ class TagRepository
             $tag->timing = $greenTag['greenTagTiming'];
             $tag->project = $project;
 
-            $ids = $this->getStoryIds($greenTag['stories']);
+            $ids = $this->getStoryIds($project, $greenTag['stories']);
             if (count($ids)) {
                 try {
                     $tag->save();
@@ -33,9 +34,14 @@ class TagRepository
         }
 	}
 
-    private function getStoryIds($pivotalIds = [])
+    private function getStoryIds($project, $pivotalIds = [])
     {
+        $projects = Config::get('pivotal.projects');
+        $projects = (new Helper)->reverseProjectIds($projects);
+        $validProjectIds = array_keys($projects[$project]);
+
         $stories = Story::whereIn('pivotal_id', $pivotalIds)->get();
+        $stories = $stories->whereIn('project_id', $validProjectIds);
         return $stories->pluck('id')->all();
     }
 
