@@ -10,6 +10,7 @@
                         <th>Project Name</th>
                         <th>Title</th>
                         <th>Story type & Points</th>
+                        <th>Edit</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,6 +27,13 @@
                         $type = $item->story_type == 'feature' ? $item->point . ' point(s)' : $item->story_type;
                         ?>
                         <td>{{ "(". $type .", " . $item->status . ")"}}</td>
+                        <td> 
+                            <a href="{{ url('/greentag') }}">
+                                <button type="button" class="btn btn-default btn-lg">
+                                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
+                                </button>
+                            </a>
+                        </td>
                     </tr>
                 <?php $counter++; ?>
                 @endforeach
