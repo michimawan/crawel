@@ -9,21 +9,21 @@
 | by your application. Just tell Laravel the URIs it should respond
 | to using a Closure or controller method. Build something great!
 |
-*/
+ */
 
 Route::get('/', [
-	'as' => 'stories.index',
-	'uses' => 'StoriesController@index'
+    'as' => 'stories.index',
+    'uses' => 'StoriesController@index'
 ]);
 
 Route::get('/stories/create', [
-	'as' => 'stories.create',
-	'uses' => 'StoriesController@create'
+    'as' => 'stories.create',
+    'uses' => 'StoriesController@create'
 ]);
 
 Route::post('/stories/store', [
-	'as' => 'stories.store',
-	'uses' => 'StoriesController@store'
+    'as' => 'stories.store',
+    'uses' => 'StoriesController@store'
 ]);
 
 Route::get('/mails/create', [
@@ -39,4 +39,14 @@ Route::post('/mails/send', [
 Route::get('/auth', [
     'as' => 'mails.oauth',
     'uses' => 'MailsController@auth'
+]);
+
+// new
+Route::get('/greentag', [
+    'as' => 'stories.greentag',
+    'uses' => 'StoriesController@greentag'
+]);
+Route::get('/edit', [
+    'as' => 'stories.edit',
+    'uses' => 'StoriesController@greentagedit'
 ]);

@@ -71,4 +71,9 @@ class StoriesController extends Controller
 	{
 		return view('stories.greentag');
 	}
+
+	public function greentagedit(Request $request)
+	{
+		return view('stories.greentagedit');
+	}
 }
