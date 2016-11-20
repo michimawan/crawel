@@ -143,7 +143,8 @@ class Helper
 
 		$selectedGreenTags = [];
 		foreach ($workspaces as $workspace) {
-			$inputName = "{$workspace}_tags";
+			$lowercased = strtolower($workspace);
+			$inputName = "{$lowercased}_tags";
 			$selectedGreenTags[$workspace] = $request->input($inputName);
 		}
 
@@ -155,6 +156,12 @@ class Helper
 		$workspaces = [];
 		foreach ($selectedGreenTags as $projectName => $selectedTag) {
 			$strTag = ucfirst($projectName) . "\r\n";
+			if (is_null($selectedTag)) {
+				$strTag .= "No Green Tag Today\r\n";
+				$workspaces[] = $strTag;
+				continue;
+			}
+
 			foreach ($selectedTag as $greenTag) {
 				$tag = Tag::with('stories')->find($greenTag);
 				if (! $tag) {

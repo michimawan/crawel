@@ -35,3 +35,8 @@ Route::post('/mails/send', [
     'as' => 'mails.send',
     'uses' => 'MailsController@send'
 ]);
+
+Route::get('/auth', [
+    'as' => 'mails.oauth',
+    'uses' => 'MailsController@auth'
+]);

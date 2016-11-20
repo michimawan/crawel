@@ -365,7 +365,8 @@ TEXT;
 
         $expected = [];
         foreach ($workspaces as $idx => $workspace) {
-            $inputName = "{$workspace}_tags";
+            $lowered = strtolower($workspace);
+            $inputName = "{$lowered}_tags";
             $request->expects($this->at($idx))
                 ->method('input')
                 ->with($inputName)
@@ -417,6 +418,27 @@ STRING;
 
         $this->assertEquals($expected, Helper::prepareForMail($selectedGreenTags));
 
+    }
+
+    public function test_prepareForMail_when_no_greenTags()
+    {
+        $selectedGreenTags = [];
+        $workspaces = array_keys(Config::get('pivotal.projects'));
+        foreach ($workspaces as $idx => $workspace) {
+            $selectedGreenTags[$workspace] = [];
+        }
+        $selectedGreenTags['foo'] = null;
+        $selectedGreenTags['bar'] = null;
+
+        $expected = <<<STRING
+Foo\r
+No Green Tag Today\r
+\r
+Bar\r
+No Green Tag Today\r\n
+STRING;
+
+        $this->assertEquals($expected, Helper::prepareForMail($selectedGreenTags));
     }
 
     private function storiesToString($project, $stories)
