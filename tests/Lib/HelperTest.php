@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Lib\Helper;
 use App\Models\Story;
@@ -232,7 +233,7 @@ TEXT;
 [finished #412] Disable responsive feature on content promotion — pair+enang / githubweb
 TEXT;
 
-        
+
         $greenTags = [
             '#1587 (Oct 20, 2016 5:23:39 PM)' => [
             ],
@@ -283,7 +284,7 @@ TEXT;
 
 TEXT;
 
-        
+
         $greenTags = [
             '#1587 (Oct 20, 2016 5:23:39 PM)' => [
             ],
@@ -354,5 +355,84 @@ TEXT;
         $storyIds = [111, 211, 212, 213, 214, 215, 311, 312, 313, 314];
         $expected = [$greenTags, $storyIds];
         $this->assertEquals($expected, Helper::parseText($text));
+    }
+
+    public function test_getSelectedGreenTags_will_return_array_of_projects_and_its_input()
+    {
+        $request = $this->createMock(Request::class);
+        $workspaces = array_keys(Config::get('pivotal.projects'));
+        $input = [];
+
+        $expected = [];
+        foreach ($workspaces as $idx => $workspace) {
+            $inputName = "{$workspace}_tags";
+            $request->expects($this->at($idx))
+                ->method('input')
+                ->with($inputName)
+                ->will($this->returnValue($input));
+
+            $expected[$workspace] = $input;
+        }
+
+        $this->assertEquals($expected, Helper::getSelectedGreenTags($request));
+    }
+
+    public function test_prepareForMail()
+    {
+        $stories1 = factory(Story::class, 3)->create([
+            'project_id' => 222
+        ]);
+        $stories1Ids = $stories1->pluck('id')->all();
+
+        $stories2 = factory(Story::class, 5)->create([
+            'project_id' => 321222
+        ]);
+        $stories2Ids = $stories2->pluck('id')->all();
+
+        $tags = factory(Tag::class, 2)->create();
+        $tags->first()->syncStories($stories1Ids);
+        $tags->last()->syncStories($stories2Ids);
+
+        $selectedGreenTags = [];
+        $workspaces = array_keys(Config::get('pivotal.projects'));
+        foreach ($workspaces as $idx => $workspace) {
+            $selectedGreenTags[$workspace] = [];
+        }
+        $selectedGreenTags['foo'] = [$tags->first()->id];
+        $selectedGreenTags['bar'] = [$tags->last()->id];
+
+        $firstTag = $tags->first();
+        $lastTag = $tags->last();
+        $stories1ToString = $this->storiesToString('foo', $stories1);
+        $stories2ToString = $this->storiesToString('bar', $stories2);
+
+        $expected = <<<STRING
+Foo\r
+{$firstTag->code} ({$firstTag->timing})\r
+{$stories1ToString}\r
+Bar\r
+{$lastTag->code} ({$lastTag->timing})\r
+{$stories2ToString}
+STRING;
+
+        $this->assertEquals($expected, Helper::prepareForMail($selectedGreenTags));
+
+    }
+
+    private function storiesToString($project, $stories)
+    {
+        $projects = Config::get('pivotal.projects');
+        $mappedProjectIds = (new Helper)->reverseProjectIds($projects);
+
+        $storiesString = "";
+        foreach ($stories as $idx => $story) {
+            $projectName = $mappedProjectIds[$project][$story->project_id];
+            $type = $story->story_type == 'chore' || $story->story_type == 'bug' ? $story->story_type : "{$story->point} point(s)";
+            $number = $idx + 1;
+
+            $storiesString .= "{$number}. [#{$story->pivotal_id}][{$projectName}] {$story->title} ({$type}) \r\n";
+        }
+
+        return $storiesString;
     }
 }

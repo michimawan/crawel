@@ -1,8 +1,9 @@
 <?php
-
 namespace App\Lib;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use App\Models\Tag;
 use Carbon\Carbon;
 use Config;
 
@@ -25,7 +26,7 @@ class Helper
 		$ids = [];
 
 		$found = preg_match_all($pattern, $text, $matches);
-		
+
 		if ($found) {
 			foreach($matches['story_id'] as $match) {
 				$ids[] = (int) $match;
@@ -62,7 +63,7 @@ class Helper
 		$greenTagsString = array_keys($greenTags);
 
 		$lineCount = count($lines);
-		for ($i=0; $i < $lineCount ; $i++) { 
+		for ($i=0; $i < $lineCount ; $i++) {
 			$stories = [];
 			if (in_array($lines[$i], $greenTagsString)) {
 				$j = $i + 1;
@@ -81,7 +82,7 @@ class Helper
 		return $greenTags;
 	}
 
-	public function reverseProjectIds($groups = []) : array
+	public static function reverseProjectIds($groups = []) : array
 	{
 		$projectIds = [];
 		foreach($groups as $groupName => $group) {
@@ -111,7 +112,7 @@ class Helper
 	public function prepareForSheet($project, $rawResponse) : array
 	{
 		$projects = Config::get('pivotal.projects');
-		$mappedProjectIds = $this->reverseProjectIds($projects);
+		$mappedProjectIds = static::reverseProjectIds($projects);
 		$preparedContent = [];
 		$index = 1;
 		$str = "";
@@ -134,5 +135,55 @@ class Helper
 	public static function sanitizeDate($date, $delimeter)
 	{
 		return substr($date, 0, strpos($date, $delimeter));
+	}
+
+	public static function getSelectedGreenTags(Request $request)
+	{
+		$workspaces = array_keys(Config::get('pivotal.projects'));
+
+		$selectedGreenTags = [];
+		foreach ($workspaces as $workspace) {
+			$inputName = "{$workspace}_tags";
+			$selectedGreenTags[$workspace] = $request->input($inputName);
+		}
+
+		return $selectedGreenTags;
+	}
+
+	public static function prepareForMail(array $selectedGreenTags)
+	{
+		$workspaces = [];
+		foreach ($selectedGreenTags as $projectName => $selectedTag) {
+			$strTag = ucfirst($projectName) . "\r\n";
+			foreach ($selectedTag as $greenTag) {
+				$tag = Tag::with('stories')->find($greenTag);
+				if (! $tag) {
+					continue;
+				}
+				$strTag .= "{$tag->code} ({$tag->timing})\r\n";
+
+				$stories = $tag->stories;
+				$strTag .= static::stringifyStory($projectName, $stories);
+			}
+			$workspaces[] = $strTag;
+		}
+		return join("\r\n", $workspaces);
+	}
+
+	private static function stringifyStory($projectName, $stories)
+	{
+		$projects = Config::get('pivotal.projects');
+		$mappedProjectIds = static::reverseProjectIds($projects);
+
+		$str = "";
+		foreach ($stories as $idx => $story) {
+            $pivotalName = $mappedProjectIds[$projectName][$story->project_id];
+            $type = $story->story_type == 'chore' || $story->story_type == 'bug' ? $story->story_type : "{$story->point} point(s)";
+            $number = $idx + 1;
+
+            $str .= "{$number}. [#{$story->pivotal_id}][{$pivotalName}] {$story->title} ({$type}) \r\n";
+		}
+
+		return $str;
 	}
 }

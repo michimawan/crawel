@@ -19,7 +19,7 @@
     'projects' => $projects,
   ])
   {!! Form::open([
-    'route' => 'mails.store',
+    'route' => 'mails.send',
     'method' => 'POST',
     'class' => '']) !!}
   <div class="tab-content">

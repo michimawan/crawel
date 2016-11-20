@@ -29,4 +29,11 @@ class WebTest extends BaseRouteTest
         $this->assertCurrentRouteName('mails.create');
         $this->assertCurrentRouteAction('MailsController@create');
     }
+
+    public function test_mailsSend()
+    {
+        $response = $this->call('POST', '/mails/send', []);
+        $this->assertCurrentRouteName('mails.send');
+        $this->assertCurrentRouteAction('MailsController@send');
+    }
 }

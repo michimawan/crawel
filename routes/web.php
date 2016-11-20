@@ -31,7 +31,7 @@ Route::get('/mails/create', [
     'uses' => 'MailsController@create'
 ]);
 
-Route::post('/mails/store', [
-    'as' => 'mails.store',
-    'uses' => 'MailsController@store'
+Route::post('/mails/send', [
+    'as' => 'mails.send',
+    'uses' => 'MailsController@send'
 ]);
