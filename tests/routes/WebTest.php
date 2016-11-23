@@ -36,4 +36,46 @@ class WebTest extends BaseRouteTest
         $this->assertCurrentRouteName('mails.send');
         $this->assertCurrentRouteAction('MailsController@send');
     }
+
+    public function test_revisionsIndex()
+    {
+        $response = $this->call('GET', '/revisions', []);
+        $this->assertCurrentRouteName('revisions.index');
+        $this->assertCurrentRouteAction('RevisionsController@index');
+    }
+
+    public function test_revisionsCreate()
+    {
+        $response = $this->call('GET', '/revisions/create', []);
+        $this->assertCurrentRouteName('revisions.create');
+        $this->assertCurrentRouteAction('RevisionsController@create');
+    }
+
+    public function test_revisionsStore()
+    {
+        $response = $this->call('POST', '/revisions', []);
+        $this->assertCurrentRouteName('revisions.store');
+        $this->assertCurrentRouteAction('RevisionsController@store');
+    }
+
+    public function test_revisionsEdit()
+    {
+        $response = $this->call('GET', '/revisions/1/edit', []);
+        $this->assertCurrentRouteName('revisions.edit');
+        $this->assertCurrentRouteAction('RevisionsController@edit');
+    }
+
+    public function test_revisionsUpdate()
+    {
+        $response = $this->call('PUT', '/revisions/1', []);
+        $this->assertCurrentRouteName('revisions.update');
+        $this->assertCurrentRouteAction('RevisionsController@update');
+    }
+
+    public function test_revisionsDelete()
+    {
+        $response = $this->call('DELETE', '/revisions/1', []);
+        $this->assertCurrentRouteName('revisions.destroy');
+        $this->assertCurrentRouteAction('RevisionsController@destroy');
+    }
 }

@@ -30,7 +30,7 @@
     <div role="tabpanel" class="tab-pane{!! $active !!}" id="{{ $projectName }}">
         @include('mails._data', [
             'projectName' => $projectName,
-            'tag' => is_null($tag->get($projectName)) ? collect() : $tag->get($projectName)->values(),
+            'revisions' => is_null($revisions->get($projectName)) ? collect() : $revisions->get($projectName)->values(),
             'projectIds' => $projectIds
         ])
     </div><!-- /tab-panel -->

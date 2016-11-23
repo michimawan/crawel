@@ -15,9 +15,9 @@ use App\Lib\Helper;
 use Carbon\Carbon;
 
 $factory->define(App\Models\Tag::class, function (Faker\Generator $faker) {
-
+    $str = Carbon::now()->toDateTimeString();
     return [
-        'code' => $faker->randomNumber + rand(10, 100),
+        'code' => $faker->randomNumber . $str,
         'timing' => Carbon::now()->toDateTimeString(),
         'project' => $faker->word,
     ];

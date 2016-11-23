@@ -72,8 +72,8 @@ class StoriesController extends Controller
 		return view('stories.greentag');
 	}
 
-	public function greentagedit(Request $request)
+	public function edit(Request $request)
 	{
-		return view('stories.greentagedit');
+		return view('stories.edit');
 	}
 }

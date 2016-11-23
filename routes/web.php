@@ -26,6 +26,15 @@ Route::post('/stories/store', [
     'uses' => 'StoriesController@store'
 ]);
 
+Route::get('/greentag', [
+    'as' => 'stories.greentag',
+    'uses' => 'StoriesController@greentag'
+]);
+Route::get('/edit', [
+    'as' => 'stories.edit',
+    'uses' => 'StoriesController@edit'
+]);
+
 Route::get('/mails/create', [
     'as' => 'mails.create',
     'uses' => 'MailsController@create'
@@ -36,17 +45,12 @@ Route::post('/mails/send', [
     'uses' => 'MailsController@send'
 ]);
 
+
 Route::get('/auth', [
     'as' => 'mails.oauth',
     'uses' => 'MailsController@auth'
 ]);
 
-// new
-Route::get('/greentag', [
-    'as' => 'stories.greentag',
-    'uses' => 'StoriesController@greentag'
-]);
-Route::get('/edit', [
-    'as' => 'stories.edit',
-    'uses' => 'StoriesController@greentagedit'
+Route::resource('revisions', 'RevisionsController', [
+    'except' => ['show']
 ]);

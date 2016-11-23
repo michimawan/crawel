@@ -12,8 +12,8 @@ use Config;
 use View;
 
 use App\Lib\TagRepository;
+use App\Models\Revision;
 use App\Lib\Helper;
-use App\Models\Tag;
 
 class MailsController extends Controller
 {
@@ -23,15 +23,15 @@ class MailsController extends Controller
             return $r;
         }
 
-        $startDate = Carbon::today();
+        $startDate = Carbon::today()->subDays(7);
         $endDate = Carbon::today()->addDay();
-        $tag = Tag::where('created_at', '>=', $startDate)->where('created_at', '<=', $endDate)->get();
+        $revisions = Revision::where('created_at', '>=', $startDate)->where('created_at', '<=', $endDate)->get();
         $projects = Config::get('pivotal.projects');
         $projects = (new Helper)->reverseProjectIds($projects);
 
-        $tag = (new Helper)->grouping($projects, $tag);
+        $revisions = (new Helper)->grouping($projects, $revisions);
         return View::make('mails.create', [
-            'tag' => $tag,
+            'revisions' => $revisions,
             'projects' => $projects,
         ]);
     }
@@ -48,14 +48,15 @@ class MailsController extends Controller
 
     public function send(Request $request)
     {
-        $selectedGreenTags = Helper::getSelectedGreenTags($request);
-        $stringMessage = Helper::prepareForMail($selectedGreenTags);
+        $selectedRevisions = Helper::getSelectedRevisions($request);
+        $stringMessage = Helper::prepareForMail($selectedRevisions);
 
         $client = $this->setUpGoogleClient();
         $client->setAccessToken($request->session()->get('access_token'));
 
         $service = new Gmail($client);
         $message = new Google_Service_Gmail_Message();
+
         $email = strtr(base64_encode($stringMessage), array('+' => '-', '/' => '_'));
         $message->setRaw($email);
         $user = 'me';
@@ -91,7 +92,6 @@ class MailsController extends Controller
         $url = route('mails.oauth');
         $scopes = implode(' ', [
             Gmail::MAIL_GOOGLE_COM,
-            Gmail::GMAIL_MODIFY,
             Gmail::GMAIL_COMPOSE,
         ]);
 
