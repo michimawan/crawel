@@ -15,10 +15,10 @@
 </div>
 <div class="row">
   <ul class="navbar-right btn btn-group">
-    <a href="{{ route('revisions.create') }}" class="btn btn-default btn-sm">
+    <a id="create-child-tag-rev" href="{{ route('revisions.create') }}" class="btn btn-default btn-sm">
       <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Create Child Tag Revisions
     </a>
-    <a href="{{ route('mails.create') }}" class="btn btn-default btn-sm">
+    <a id="create-daily-mail" href="{{ route('mails.create') }}" class="btn btn-default btn-sm">
       <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Create Daily Mail
     </a>
   </ul>
