@@ -1,30 +1,38 @@
 @php $projectName = strtolower($projectName) @endphp
 @php
 $fields = [
-    'child_tag_revisions',
-    'end_time_check_story',
-    'end_time_run_automate_test',
-    'time_get_canary',
-    'time_to_elb',
+    'Child Tag Revisions' => 'child_tag_revisions',
+    'End Time Check Story' => 'end_time_check_story',
+    'End Time Run Automate Test' => 'end_time_run_automate_test',
+    'Time Get Canary' => 'time_get_canary',
+    'Time to Elb' => 'time_to_elb',
 ];
 @endphp
-<div class="container">
+<div class='col-sm-6'>
   <div class="form-group">
-    @foreach ($fields as $field)
+  @foreach ($fields as $title => $field)
         @php $name = "{$projectName}_{$field}" @endphp
-      <div class="form-group">
-      <div class='input-group date' id='datetimepicker3'>
-          {!! Form::label($name, ucwords(str_replace('_', ' ', $name))) !!}
-          {!! Form::text($name, '', ['class' => 'form-control']) !!}
-      </div>
-      </div>
-    @endforeach
-        @php $name = "{$projectName}_description" @endphp
+      <!-- <div class="form&#45;group"> -->
+      <!-- <div class='input&#45;group date' id='datetimepicker3'> -->
+      <!--     {!! Form::label($name, ucwords(str_replace('_', ' ', $name))) !!} -->
+      <!--     {!! Form::text($name, '', ['class' => 'form&#45;control']) !!} -->
+      <!-- </div> -->
+      <!-- </div> -->
     <div class="form-group">
-    <div class='input-group date' id='datetimepicker3'>
-      {!! Form::label($name, 'Descriptions') !!}
-      {!! Form::text($name, '', ['class' => 'form-control']) !!}
+      <div class='input-group date' id='datetimepicker3'>
+      <input name="<?php echo $name ?>" type='text' class="form-control" placeholder="<?php echo $title ?>"/>
+          <span class="input-group-addon"/>
+          <span class="glyphicon glyphicon-time"/>
+      </div>
     </div>
+    @endforeach
+    @php $name = "{$projectName}_description" @endphp
+    <div class="form-group">
+      <div class='input-group date' id='datetimepicker3'>
+      <input name="<?php echo $name ?>" type='text' class="form-control" placeholder="Description"/>
+          <span class="input-group-addon"/>
+          <span class="glyphicon glyphicon-time"/>
+      </div>
     </div>
   </div>
 </div>
