@@ -21,6 +21,11 @@ class Tag extends Model
         return $this->belongsToMany(Story::class, 'story_tag', 'tag_id', 'story_id');
     }
 
+    public function revisions()
+    {
+        return $this->belongsTo(Revision::class);
+    }
+
     /**
      * method section
      */

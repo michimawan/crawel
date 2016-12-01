@@ -4,40 +4,28 @@
 {{ Html::style('css/jquery-ui.min.css') }}
 
 <div class="container">
+<div class="row">
 {!! Form::open([
   'route' => 'stories.index',
   'method' => 'GET',
   'class' => '']) !!}
-<!-- {!! Form::date('date', \Carbon\Carbon::now(), ['class' => 'btn-small', 'id' => 'datepicker']) !!}
- -->{!! Form::text('date', '', ['class' => 'btn-small', 'id' => 'datepicker']) !!}
-
-{!! Form::submit('Submit', ['class' => 'btn btn-info btn-sm']) !!}
+  {!! Form::text('date', '', ['class' => 'btn-small', 'id' => 'datepicker']) !!}
+  {!! Form::submit('Submit', ['class' => 'btn btn-info btn-sm']) !!}
 {!! Form::close() !!}
-<div>
-<div role="presentation" class="divider"><div>
-
-<div role="presentation" class="divider"><div>
-<ul class="nav navbar-right">
-    <a href="{{ url('/create') }}">
-        <button type="button" class="btn btn-danger btn-sm">Create daily email</button>
+</div>
+<div class="row">
+  <ul class="navbar-right btn btn-group">
+    <a id="create-child-tag-rev" href="{{ route('revisions.create') }}" class="btn btn-default btn-sm">
+      <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Create Child Tag Revisions
     </a>
-</ul>  
-<div role="presentation" class="divider"><div>
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
-    @php
-    $active = 'class="active"';
-    @endphp
-    @foreach($projects as $projectName => $projectIds)
-      <li role="presentation"{!! $active !!}>
-        <a href="#{{ $projectName }}" aria-controls="{{ $projectName }}" role="tab" data-toggle="tab">{{ $projectName }}</a>
-      </li>
-      @php
-      $active = '';
-      @endphp
-    @endforeach
+    <a id="create-daily-mail" href="{{ route('mails.create') }}" class="btn btn-default btn-sm">
+      <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Create Daily Mail
+    </a>
   </ul>
-
+  <!-- Nav tabs -->
+  @include('elements.navtabs', [
+    'projects' => $projects,
+  ])
   <!-- Tab panes -->
   <div class="tab-content">
     @php
@@ -56,6 +44,7 @@
         @endphp
     @endforeach
   </div>
+</div>
 </div>
 
 </div>

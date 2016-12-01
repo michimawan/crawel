@@ -1,7 +1,10 @@
 <?php
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Lib\Helper;
+use App\Models\Revision;
 use App\Models\Story;
 use App\Models\Tag;
 
@@ -97,8 +100,8 @@ STRING;
 
         $expected = [
             'foo' => $greenTags->where('project', 'foo'),
-            'foo2' => $greenTags->where('project', 'foo2'),
-        ];
+                'foo2' => $greenTags->where('project', 'foo2'),
+            ];
 
         $this->assertEquals(collect($expected), (new Helper)->grouping($projects, $greenTags));
     }
@@ -154,9 +157,9 @@ STRING;
         $project = 'foo';
         $expected = [[
             $date->toDateTimeString(),
-            $project,
-            "1. [#1200][foo-4] refactoring (chore, accepted) \r\n2. [#1300][foo-4] refactoring 2 (bug, delivered) \r\n3. [#1301][foo-5] refactoring 2 (2 point(s), rejected)"
-        ]];
+                $project,
+                "1. [#1200][foo-4] refactoring (chore, accepted) \r\n2. [#1300][foo-4] refactoring 2 (bug, delivered) \r\n3. [#1301][foo-5] refactoring 2 (2 point(s), rejected)"
+                ]];
 
         $this->assertEquals($expected, (new Helper())->prepareForSheet($project, $responses));
     }
@@ -232,7 +235,7 @@ TEXT;
 [finished #412] Disable responsive feature on content promotion — pair+enang / githubweb
 TEXT;
 
-        
+
         $greenTags = [
             '#1587 (Oct 20, 2016 5:23:39 PM)' => [
             ],
@@ -283,7 +286,7 @@ TEXT;
 
 TEXT;
 
-        
+
         $greenTags = [
             '#1587 (Oct 20, 2016 5:23:39 PM)' => [
             ],
@@ -354,5 +357,177 @@ TEXT;
         $storyIds = [111, 211, 212, 213, 214, 215, 311, 312, 313, 314];
         $expected = [$greenTags, $storyIds];
         $this->assertEquals($expected, Helper::parseText($text));
+    }
+
+    public function test_getSelectedRevisions_will_return_array_of_projects_and_its_input()
+    {
+        $request = $this->createMock(Request::class);
+        $workspaces = array_keys(Config::get('pivotal.projects'));
+        $input = [];
+
+        $expected = [];
+        foreach ($workspaces as $idx => $workspace) {
+            $lowered = strtolower($workspace);
+            $inputName = "{$lowered}_revisions";
+            $request->expects($this->at($idx))
+                ->method('input')
+                ->with($inputName)
+                ->will($this->returnValue($input));
+
+            $expected[$workspace] = $input;
+        }
+
+        $this->assertEquals($expected, Helper::getSelectedRevisions($request));
+    }
+
+
+    public function test_getSelectedGreenTags_will_return_array_of_projects_and_its_input()
+    {
+        $request = $this->createMock(Request::class);
+        $workspaces = array_keys(Config::get('pivotal.projects'));
+        $input = [];
+
+        $expected = [];
+        foreach ($workspaces as $idx => $workspace) {
+            $lowered = strtolower($workspace);
+            $inputName = "{$lowered}_tags";
+            $request->expects($this->at($idx))
+                ->method('input')
+                ->with($inputName)
+                ->will($this->returnValue($input));
+
+            $expected[$workspace] = $input;
+        }
+
+        $this->assertEquals($expected, Helper::getSelectedGreenTags($request));
+    }
+
+    private function prepareMailData()
+    {
+        $barRevision = factory(Revision::class)->create([
+            'project' => 'bar',
+        ]);
+        $stories = factory(Story::class, 3)->create([
+            'project_id' => 321222,
+        ]);
+        $barTags = factory(Tag::class, 2)->create([
+            'project' => 'bar'
+        ]);
+        foreach($barTags as $bar) {
+            $bar->syncStories($stories->pluck('id')->all());
+        }
+        $barRevision->syncTags($barTags->pluck('id')->all());
+        $barRevision = collect([$barRevision]);
+
+        $fooRevisions = factory(Revision::class, 2)->create([
+            'project' => 'foo',
+        ]);
+
+        $stories = factory(Story::class, 3)->create([
+            'project_id' => 222,
+        ]);
+        $fooTags = factory(Tag::class, 2)->create([
+            'project' => 'foo'
+        ]);
+        foreach($fooTags as $foo) {
+            $foo->syncStories($stories->pluck('id')->all());
+        }
+        $fooRevisions->first()->syncTags($fooTags->pluck('id')->all());
+
+        $stories = factory(Story::class, 3)->create([
+            'project_id' => 222,
+        ]);
+        $fooTags = factory(Tag::class, 2)->create([
+            'project' => 'foo'
+        ]);
+        foreach($fooTags as $foo) {
+            $foo->syncStories($stories->pluck('id')->all());
+        }
+        $fooRevisions->last()->syncTags($fooTags->pluck('id')->all());
+
+        return [$fooRevisions, $barRevision];
+    }
+
+    public function test_prepareForMail()
+    {
+        list($fooRevisions, $barRevisions) = $this->prepareMailData();
+        $selectedRevisions['foo'] = $fooRevisions->pluck('id')->all();
+        $selectedRevisions['bar'] = $barRevisions->pluck('id')->all();
+
+        $stories1ToString = $this->storiesToString('foo', $fooRevisions);
+        $stories2ToString = $this->storiesToString('bar', $barRevisions);
+
+        $blankSpace = ' ';
+        $expected = <<<STRING
+{$stories1ToString}{$blankSpace}
+{$stories2ToString}{$blankSpace}
+STRING;
+        // d($expected);
+        // d(Helper::prepareForMail($selectedRevisions));
+
+        $this->assertEquals($expected, Helper::prepareForMail($selectedRevisions));
+    }
+
+    public function test_sprepareForMail_when_no_childTagRevs()
+    {
+        $selectedChildTagRevs = [];
+        $workspaces = array_keys(Config::get('pivotal.projects'));
+        foreach ($workspaces as $idx => $workspace) {
+            $selectedChildTagRevs[$workspace] = [];
+        }
+        $selectedChildTagRevs['foo'] = null;
+        $selectedChildTagRevs['bar'] = null;
+
+        $blankSpace = ' ';
+        $expected = <<<STRING
+Foo
+No Child Tag Revs Today
+{$blankSpace}
+Bar
+No Child Tag Revs Today
+{$blankSpace}
+STRING;
+
+        $this->assertEquals($expected, Helper::prepareForMail($selectedChildTagRevs));
+    }
+
+    private function storiesToString($project, $revisions)
+    {
+        $projects = Config::get('pivotal.projects');
+        $mappedProjectIds = (new Helper)->reverseProjectIds($projects);
+
+        $uppercasedProject = ucwords($project);
+        $date = Carbon::today()->toDateString();
+        $revisionString = "";
+        $storiesString = "";
+
+        $revisionString .= "{$uppercasedProject}\n";
+        foreach ($revisions as $revision) {
+            $storiesString = "";
+            $storiesString .= "Date: {$date}\n";
+            $storiesString .= "Revisions: {$revision->child_tag_revisions}\n";
+            // $storiesString .= "Get Green Tag Time: {$revision->child_tag_revisions}\n";
+            $storiesString .= "Stories:\n";
+            foreach ($revision->tags as $greenTag) {
+                foreach ($greenTag->stories as $idx => $story) {
+                    $projectName = $mappedProjectIds[$project][$story->project_id];
+                    $type = $story->story_type == 'chore' || $story->story_type == 'bug' ? $story->story_type : "{$story->point} point(s)";
+                    $number = $idx + 1;
+
+                    $storiesString .= "{$number}. [#{$story->pivotal_id}][{$projectName}] {$story->title} ({$type}) \n";
+                }
+            }
+            // put here for other child tag rev properties
+            $revisionString .= $storiesString . "\n ";
+            $revisionString .= "End Time To Check Stories: {$revision->end_time_check_story}\n";
+            $revisionString .= "End Time To Run Automate Test: {$revision->end_time_run_automate_test}\n";
+            $revisionString .= "Time Get Canary: {$revision->time_get_canary}\n";
+            $revisionString .= "End Time To Test Canary: {$revision->time_get_canary}\n";
+            $revisionString .= "End Time To ELB : {$revision->time_to_elb}\n";
+            $revisionString .= "Description: {$revision->description}\n";
+
+        }
+
+        return $revisionString;
     }
 }

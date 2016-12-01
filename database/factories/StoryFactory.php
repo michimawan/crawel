@@ -22,6 +22,6 @@ $factory->define(App\Models\Story::class, function (Faker\Generator $faker) {
         'title' => $faker->name,
         'point' => $faker->randomDigit,
         'project_id' => $faker->randomNumber,
-        'story_type' => $faker->word,
+        'story_type' => $faker->randomElement(['bug', 'feature', 'chore']),
     ];
 });

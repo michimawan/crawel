@@ -19,51 +19,56 @@ use Config;
 
 class StoriesController extends Controller
 {
-	public function index(Request $request)
-	{
-		$date = $request->input('date') ? $request->input('date') : null;
+    public function index(Request $request)
+    {
+        $date = $request->input('date') ? $request->input('date') : null;
 
-		$projects = Config::get('pivotal.projects');
-		$projects = (new Helper)->reverseProjectIds($projects);
-		$tag = (new TagRepository)->getByDate($date);
+        $projects = Config::get('pivotal.projects');
+        $projects = (new Helper)->reverseProjectIds($projects);
+        $tag = (new TagRepository)->getByDate($date);
 
-		$tag = (new Helper)->grouping($projects, $tag);
+        $tag = (new Helper)->grouping($projects, $tag);
 
-		return view('stories.index', [
-			'tag' => $tag,
-			'projects' => $projects,
-		]);
-	}
-
-	public function create()
-	{
-		$project = Config::get('pivotal.projects');
-		$option = [];
-		foreach($project as $key => $p) {
-			$option[$key] = $key;
-		}
-        return view('stories.create', [
-        	'options' => $option
+        return view('stories.index', [
+            'tag' => $tag,
+            'projects' => $projects,
         ]);
-	}
+    }
 
-	public function store(Request $request)
-	{
-		$stories = $request->input('stories');
-		$project = $request->input('project');
+    public function create()
+    {
+        $project = Config::get('pivotal.projects');
+        $option = [];
+        foreach($project as $key => $p) {
+            $option[$key] = $key;
+        }
+        return view('stories.create', [
+            'options' => $option
+        ]);
+    }
 
-		if (is_null($stories)) {
-			return redirect()->route('stories.create');
-		}
+    public function store(Request $request)
+    {
+        $stories = $request->input('stories');
+        $project = $request->input('project');
 
-		$curl = new Curl;
-		$curl->setHeader('X-TrackerToken', Config::get('pivotal.apiToken'));
+        if (is_null($stories)) {
+            return redirect()->route('stories.create');
+        }
+
+        $curl = new Curl;
+        $curl->setHeader('X-TrackerToken', Config::get('pivotal.apiToken'));
 
         list($greenTags, $ids) = Helper::parseText($stories);
-		$responses = (new Curler())->curl($project, $ids, $curl);
-		(new StoryRepository())->store($responses);
+        $responses = (new Curler())->curl($project, $ids, $curl);
+        (new StoryRepository())->store($responses);
         (new TagRepository())->store($project, $greenTags);
 
-		return redirect()->route('stories.index');
-	}
+        return redirect()->route('stories.index');
+    }
+
+    public function edit(Request $request)
+    {
+        return view('stories.edit');
+    }
 }

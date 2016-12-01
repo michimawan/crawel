@@ -1,36 +1,26 @@
-       	<div class="container">
-        <h1>Today {{ $projectName }} Story</h1>
-        <div class="table">
-            <table class="table table-bordered table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>GreenTag Id</th>
-                        <th>Story Id</th>
-                        <th>Project Name</th>
-                        <th>Title</th>
-                        <th>Story type & Points</th>
-                    </tr>
-                </thead>
-                <tbody>
-                <?php $counter = 1; ?>
-                @foreach($tag as $greenTag)
-                @foreach($greenTag->stories as $i => $item)
-                    <tr>
-                        <td>{{ $counter }}</td>
-                        <td>{{ $greenTag->code }}</td>
-                        <td>{{ "[#" . $item->pivotal_id . "]" }}</td>
-                        <td>{{ isset($projectIds[$item->project_id]) ? $projectIds[$item->project_id] : "" }}</td>
-                        <td>{{ $item->title }}</td>
-                        <?php
-                        $type = $item->story_type == 'feature' ? $item->point . ' point(s)' : $item->story_type;
-                        ?>
-                        <td>{{ "(". $type .", " . $item->status . ")"}}</td>
-                    </tr>
-                <?php $counter++; ?>
-                @endforeach
-                @endforeach
-                </tbody>
-            </table>
-        </div>
-      </div>
+<div class="container">
+<h1>Today {{ $projectName }} Story</h1>
+<div class="table">
+    <table class="table table-bordered table-striped table-hover">
+        @foreach($tag as $greenTag)
+        <li class="list-group-item">
+            <h4>Greentag &nbsp; &nbsp;<span>{{ $greenTag->code }}</span></h4>
+            <h5> Story List </h5>
+        @foreach($greenTag->stories as $i => $item)
+            <p>
+                {{ ($i+1) . "." }}
+            {{ "[#" . $item->pivotal_id . "]" }}
+            {{ isset($projectIds[$item->project_id]) ? $projectIds[$item->project_id] : "" }}
+            <span class="box ellipsis">{{ $item->title }}</span>
+            <?php
+                $type = $item->story_type == 'feature' ? $item->point . ' points' : $item->story_type;
+            ?>
+            {{ "(". $type .", " . $item->status . ")"}}
+            </p>
+        @endforeach
+        </li>
+        @endforeach
+        </tbody>
+    </table>
+</div>
+</div>
