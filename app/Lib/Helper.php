@@ -11,7 +11,14 @@ use App\Models\Tag;
 
 class Helper
 {
-    public static function parseText(string $text) : array
+    /**
+     * @return array of greenTags and array of StoryIDs
+     *
+     * @param raw text from Jenkins CI
+     * example text that been parsed
+     * available on directory datas
+     */
+    public static function parseText(string $text)
     {
         $greenTags = self::parseGreenTag($text);
         $greenTags = self::addStoriesToGreenTag($greenTags, $text);
@@ -21,7 +28,12 @@ class Helper
         return [$greenTags, $storyIds];
     }
 
-    public static function parse(string $text = '') : array
+    /**
+     * @return array of pivotaltracker storyIDs
+     *
+     * @param string of raw text to be parsed it's storyIDs
+     */
+    public static function parse(string $text = '')
     {
         $pattern = '/#(?P<story_id>\d+)\]/i';
         $matches = [];
@@ -38,9 +50,14 @@ class Helper
         return $ids;
     }
 
-    // example match pattern
-    // #1587 (Oct 20, 2016 5:23:39 PM)
-    public static function parseGreenTag(string $text = '') : array
+    /**
+     * @return array of greenTag
+     *
+     * @param raw string to be parsed it's greenTag
+     * example match pattern
+     * #1587 (Oct 20, 2016 5:23:39 PM)
+     */
+    public static function parseGreenTag(string $text = '')
     {
         $pattern = '/(?P<green_tag_timing>(?P<green_tag_id>#(\d+)) \((?P<timing>[A-Za-z0-9,: ]+)\))/i';
 
@@ -59,7 +76,13 @@ class Helper
         return $greenTag;
     }
 
-    public static function addStoriesToGreenTag(array $greenTags = [], string $text = '') : array
+    /**
+     * @return array of greenTags that has storyIds as array in it
+     *
+     * @param array of greenTags that has not have index 'stories'
+     * @param string of raw text from jenkins CI
+     */
+    public static function addStoriesToGreenTag($greenTags = [], $text = '')
     {
         $lines = preg_split("/\\r\\n|\\r|\\n/", $text);
         $greenTagsString = array_keys($greenTags);
@@ -84,7 +107,12 @@ class Helper
         return $greenTags;
     }
 
-    public static function reverseProjectIds($groups = []) : array
+    /**
+     * @return array of reversed projectIds from Config.pivotal.projects
+     *
+     * @param array of config.pivotal.projects
+     */
+    public static function reverseProjectIds($groups = [])
     {
         $projectIds = [];
         foreach($groups as $groupName => $group) {
@@ -96,7 +124,13 @@ class Helper
         return $projectIds;
     }
 
-    public function grouping($groups, $greenTags) : Collection
+    /**
+     * @return Collection that has been grouped based on workspace
+     *
+     * @param array of workspace group, based on config.pivotal.projects
+     * @param Collection of Revision
+     */
+    public function grouping($groups, $greenTags)
     {
         $collection = collect();
 
@@ -111,7 +145,13 @@ class Helper
         return $collection;
     }
 
-    public function prepareForSheet($project, $rawResponse) : array
+    /**
+     * @return array of data that will be send to google sheet
+     *
+     * @param string of workspace name,
+     * @param array of rawResponse from curling pivotal API
+     */
+    public function prepareForSheet($project, $rawResponse)
     {
         $projects = Config::get('pivotal.projects');
         $mappedProjectIds = static::reverseProjectIds($projects);
@@ -134,12 +174,23 @@ class Helper
         return [$preparedContent];
     }
 
+    /**
+     * @return date 2016-12-31
+     *
+     * @param string of date, e.g: 2016-12-01 15:03:55
+     * @param char separator that will be used
+     */
     public static function sanitizeDate($date, $delimeter)
     {
         return substr($date, 0, strpos($date, $delimeter));
     }
 
-    public static function getSelectedRevisions(Request $request)
+    /**
+     * @return array of Revision that been selected on mails/create
+     *
+     * @param Request object from controller
+     */
+    public static function getSelectedRevisions($request)
     {
         $workspaces = array_keys(Config::get('pivotal.projects'));
 
@@ -153,7 +204,12 @@ class Helper
         return $selectedRevisions;
     }
 
-    public static function getSelectedGreenTags(Request $request)
+    /**
+     * @return array of Tag that been selected on revisions/create
+     *
+     * @param Request object from controller
+     */
+    public static function getSelectedGreenTags($request)
     {
         $workspaces = array_keys(Config::get('pivotal.projects'));
 
@@ -167,7 +223,12 @@ class Helper
         return $selectedGreenTags;
     }
 
-    public static function prepareForMail(array $selectedChildTagRevs)
+    /**
+     * @return string of data that will be send to google mail
+     *
+     * @param array of selected Revision
+     */
+    public static function prepareForMail($selectedChildTagRevs)
     {
         $workspaces = [];
         foreach ($selectedChildTagRevs as $projectName => $selectedTag) {
@@ -210,6 +271,12 @@ class Helper
         return join("\n", $workspaces);
     }
 
+    /**
+     * @return string of story that's been formatted
+     *
+     * @param string of projectName, e.g: foo-1
+     * @param array of stories
+     */
     private static function stringifyStory($projectName, $stories)
     {
         $projects = Config::get('pivotal.projects');

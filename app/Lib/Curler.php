@@ -5,7 +5,15 @@ use Config;
 
 class Curler
 {
-    public function curl($project = '', $ids = [], $curl) : array
+    /**
+     * @param array of response
+     * the response is grouped by the given projects
+     *
+     * @param string of projects / workspace
+     * @param array of pivotaltracker story ID
+     * @param Curl object of Curl class
+     */
+    public function curl($project = '', $ids = [], $curl)
     {
         $projectIds = $this->getProjectIds($project);
 
@@ -16,7 +24,14 @@ class Curler
         return $responses;
     }
 
-    public function fetchData($projectId = null, $ids = [], $curl) : array
+    /**
+     * @return array of response from pivotal API
+     *
+     * @param integer of project ID on pivotaltracker
+     * @param array of searched pivotaltracker story ID
+     * @param Curl object
+     */
+    public function fetchData($projectId = null, $ids = [], $curl)
     {
         if (is_null($projectId) || count($ids) == 0) {
             return [];
@@ -35,7 +50,12 @@ class Curler
         return $responses;
     }
 
-    public function getProjectIds($project = '') : array
+    /**
+     * @return array of workspace IDs
+     *
+     * @param string of desired project in config
+     */
+    public function getProjectIds($project = '')
     {
         $projectIds = Config::get("pivotal.projects.{$project}");
         return is_null($projectIds) ? [] : array_values($projectIds);

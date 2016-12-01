@@ -12,8 +12,14 @@ use App\Models\Tag;
 
 class TagRepository
 {
-	public function store($project, $tags)
-	{
+    /**
+     * @return void
+     *
+     * @param string name of selected workspace
+     * @param array of formatted Tags
+     */
+    public function store($project, $tags)
+    {
         foreach ($tags as $greenTag) {
             $tag = new Tag;
             $tag->code = $greenTag['greenTagId'];
@@ -32,8 +38,14 @@ class TagRepository
                 $tag->syncStories($ids);
             }
         }
-	}
+    }
 
+    /**
+     * @return array of pivotaltracker storyIDs
+     *
+     * @param string selected workspace
+     * @param array of pivotaltracker storyIDs
+     */
     private function getStoryIds($project, $pivotalIds = [])
     {
         $projects = Config::get('pivotal.projects');
@@ -45,6 +57,11 @@ class TagRepository
         return $stories->pluck('id')->all();
     }
 
+    /**
+     * @return Collection of Tag based on date parameter
+     *
+     * @param string of date, e.g: 2016-01-30
+     */
     public function getByDate($date = null)
     {
         if ($date == null) {

@@ -15,6 +15,12 @@ use App\Models\Tag;
 
 class RevisionRepository
 {
+    /**
+     * @return boolean of success save or not
+     *
+     * @param array of properties that's been grouped based on workspace
+     * @param array of selected Revision that's been grouped based on workspace
+     */
     public function store($properties, $selectedGreenTags)
     {
         $success = true;
@@ -58,11 +64,21 @@ class RevisionRepository
         }
     }
 
+    /**
+     * @return boolean of valid or not the selected greenTags array
+     *
+     * @param array of selectedGreenTags
+     */
     private function isNotValidSelectedGreenTags($tags) {
         return is_null($tags) || count($tags) == 0;
     }
 
-    public static function getProperties(Request $request)
+    /**
+     * @return array of properties of Revision model grouped based on workspace
+     *
+     * @param Request from controller
+     */
+    public static function getProperties($request)
     {
         $fields = [
             'child_tag_revisions',

@@ -9,6 +9,11 @@ use App\Models\Story;
 
 class StoryRepository
 {
+    /**
+     * @return void
+     *
+     * @param Collection of workspaces that's been grouped
+     */
     public function store($projects)
     {
         foreach($projects as $project) {
