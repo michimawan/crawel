@@ -462,8 +462,6 @@ TEXT;
 {$stories1ToString}{$blankSpace}
 {$stories2ToString}{$blankSpace}
 STRING;
-        // d($expected);
-        // d(Helper::prepareForMail($selectedRevisions));
 
         $this->assertEquals($expected, Helper::prepareForMail($selectedRevisions));
     }
@@ -508,14 +506,19 @@ STRING;
             $storiesString .= "Revisions: {$revision->child_tag_revisions}\n";
             // $storiesString .= "Get Green Tag Time: {$revision->child_tag_revisions}\n";
             $storiesString .= "Stories:\n";
-            foreach ($revision->tags as $greenTag) {
-                foreach ($greenTag->stories as $idx => $story) {
-                    $projectName = $mappedProjectIds[$project][$story->project_id];
-                    $type = $story->story_type == 'chore' || $story->story_type == 'bug' ? $story->story_type : "{$story->point} point(s)";
-                    $number = $idx + 1;
 
-                    $storiesString .= "{$number}. [#{$story->pivotal_id}][{$projectName}] {$story->title} ({$type}) \n";
-                }
+            $stories = collect();
+            foreach ($revision->tags as $greenTag) {
+                $stories = $stories->merge($greenTag->stories);
+            }
+            $stories = $stories->unique(function($item) {
+                return $item->pivotal_id;
+            });
+            foreach ($stories as $idx => $story) {
+                $projectName = $mappedProjectIds[$project][$story->project_id];
+                $type = $story->story_type == 'chore' || $story->story_type == 'bug' ? $story->story_type : "{$story->point} point(s)";
+
+                $storiesString .= "[#{$story->pivotal_id}][{$projectName}] {$story->title} ({$type}) \n";
             }
             // put here for other child tag rev properties
             $revisionString .= $storiesString . "\n ";

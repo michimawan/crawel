@@ -38,9 +38,18 @@ class MailsController extends Controller
 
     private function checkGmailSession(Request $request)
     {
+        // validate has access_token or not
         if ($request->session()->has('access_token') &&
             $request->session()->exists('access_token')) {
-            return;
+
+            // validate wether the token has expired or not?
+            $time = $request->session()->get('access_token')['created'];
+            $currentTime = Carbon::now()->subHour()->timestamp;
+            if ($time > $currentTime) {
+                return;
+            }
+            $request->session()->forget('access_token');
+            return Redirect::route('mails.oauth');
         }
 
         return Redirect::route('mails.oauth');

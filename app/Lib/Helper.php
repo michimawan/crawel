@@ -253,10 +253,13 @@ class Helper
                 $strRev .= "Date: {$date}\n";
                 $strRev .= "Revisions: {$revision->child_tag_revisions}\n";
                 $strRev .= "Stories:\n";
+
+                $stories = collect();
                 foreach ($revision->tags as $greenTags) {
-                    $stories = $greenTags->stories;
-                    $strRev .= static::stringifyStory($projectName, $stories);
+                    $stories = $stories->merge($greenTags->stories);
                 }
+                $strRev .= static::stringifyStory($projectName, $stories);
+
                 $str .= $strRev . "\n ";
                 $str .= "End Time To Check Stories: {$revision->end_time_check_story}\n";
                 $str .= "End Time To Run Automate Test: {$revision->end_time_run_automate_test}\n";
@@ -282,13 +285,15 @@ class Helper
         $projects = Config::get('pivotal.projects');
         $mappedProjectIds = static::reverseProjectIds($projects);
 
+        $stories = $stories->unique(function($item) {
+            return $item->pivotal_id;
+        });
         $str = "";
         foreach ($stories as $idx => $story) {
             $pivotalName = $mappedProjectIds[$projectName][$story->project_id];
             $type = $story->story_type == 'chore' || $story->story_type == 'bug' ? $story->story_type : "{$story->point} point(s)";
-            $number = $idx + 1;
 
-            $str .= "{$number}. [#{$story->pivotal_id}][{$pivotalName}] {$story->title} ({$type}) \n";
+            $str .= "[#{$story->pivotal_id}][{$pivotalName}] {$story->title} ({$type}) \n";
         }
 
         return $str;
