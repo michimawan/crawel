@@ -12,6 +12,7 @@ use Google_Service_Sheets as GoogleSpreadSheets;
 use App\Lib\StoryRepository;
 use App\Lib\TagRepository;
 use App\Lib\GoogleSheet;
+use App\Lib\StoryHelper;
 use App\Lib\Helper;
 use App\Lib\Curler;
 use Carbon\Carbon;
@@ -59,7 +60,7 @@ class StoriesController extends Controller
         $curl = new Curl;
         $curl->setHeader('X-TrackerToken', Config::get('pivotal.apiToken'));
 
-        list($greenTags, $ids) = Helper::parseText($stories);
+        list($greenTags, $ids) = StoryHelper::parseText($stories);
         $responses = (new Curler())->curl($project, $ids, $curl);
         (new StoryRepository())->store($responses);
         (new TagRepository())->store($project, $greenTags);
