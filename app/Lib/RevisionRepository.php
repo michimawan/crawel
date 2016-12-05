@@ -104,4 +104,16 @@ class RevisionRepository
 
         return $properties;
     }
+
+    //this function for get manually getTiming
+    private function getTiming($time, $childTags = [])
+    {
+        $times = Config::get('pivotal.projects');
+        $times = (new Helper)->reverseProjectIds($times);
+        $validProjectIds = array_keys($times[$time]);
+
+        $times = Revision::whereIn('child_tag_revisions', $childTags)->get();
+        $times = $times->whereIn('child_tag_revisions', $validProjectIds);
+        return $times->pluck('id')->all();
+    }
 }
