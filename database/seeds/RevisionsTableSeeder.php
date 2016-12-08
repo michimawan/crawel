@@ -31,7 +31,9 @@ class RevisionsTableSeeder extends Seeder
 
 	    		$tagCollection->push($tag);
     		}
-    		$rev = factory(Revision::class)->create();
+    		$rev = factory(Revision::class)->create([
+                'project' => $workspaceName
+            ]);
     		$rev->syncTags($tagCollection->pluck('id')->all());
     	}
     }

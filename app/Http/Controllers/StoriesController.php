@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Google_Client as GoogleClient;
 use Google_Service_Sheets as GoogleSpreadSheets;
 use App\Lib\StoryRepository;
-use App\Lib\TagRepository;
+use App\Lib\RevisionRepository;
 use App\Lib\GoogleSheet;
 use App\Lib\StoryHelper;
 use App\Lib\Helper;
@@ -26,12 +26,12 @@ class StoriesController extends Controller
 
         $projects = Config::get('pivotal.projects');
         $projects = (new Helper)->reverseProjectIds($projects);
-        $tag = (new TagRepository)->getByDate($date);
+        $rev = (new RevisionRepository)->getByDate($date);
 
-        $tag = (new Helper)->grouping($projects, $tag);
+        $rev = (new Helper)->grouping($projects, $rev);
 
         return view('stories.index', [
-            'tag' => $tag,
+            'rev' => $rev,
             'projects' => $projects,
         ]);
     }

@@ -35,7 +35,7 @@
         <div role="tabpanel" class="tab-pane{!! $active !!}" id="{{ $projectName }}">
         @include('stories._data', [
             'projectName' => $projectName,
-            'tag' => is_null($tag->get($projectName)) ? collect() : $tag->get($projectName)->values(),
+            'rev' => is_null($rev->get($projectName)) ? collect() : $rev->get($projectName)->values(),
             'projectIds' => $projectIds
         ])
         </div>
