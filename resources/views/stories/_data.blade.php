@@ -18,37 +18,45 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($tag as $greenTag)
+            @foreach($rev as $revision)
             <tr>
        
               <?php $number = 1; ?>
               <td> {{ $number++ . "." }} </td>
               <td>date</td>
-              @foreach($greenTag->revisions as $i => $item)
               <td>
-                <p>{{ $item->child_tag_revisions }}</p>
+                <p>{{ $revision->child_tag_revisions }}</p>
               </td>
-              @foreach($greenTag->stories as $i => $item)
-              <td>{{ $item->created_at }}</td>
               <td>
-                <p>
-                    {{ ($i+1) . "." }}
-                    {{ "[#" . $item->pivotal_id . "]" }}
-                    {{ isset($projectIds[$item->project_id]) ? $projectIds[$item->project_id] : "" }}
-                    <span class="box ellipsis">{{ $item->title }}</span>
-                    <?php
-                        $type = $item->story_type == 'feature' ? $item->point . ' points' : $item->story_type;
-                    ?>
-                    {{ "(". $type .", " . $item->status . ")"}}
-                </p>
-              @endforeach
+                <p>{{ $revision->child_tag_revisions }}</p>
               </td>
-              <td><p>{{ $item->end_time_check_story }}</p></td>
-              <td><p>{{ $item->end_time_run_automate_test }}</p></td>
-              <td><p>{{ $item->time_get_canary }}</p></td>
-              <td><p>{{ $item->time_to_elb }}</p></td>
-              <td><p>{{ $item->description }}</p></td>
+              <td>
+              @php $storiesString = ""; @endphp
+              @foreach($revision->tags as $tag)
+                  @php $tmp = ""; @endphp
+                  @foreach($tag->stories as $i => $item)
+                      @php
+                      $str = "[#" . $item->pivotal_id . "]";
+                      $str .= isset($projectIds[$item->project_id]) ? $projectIds[$item->project_id] : "";
+
+                      $type = $item->story_type == 'feature' ? $item->point . ' points' : $item->story_type;
+
+                      $str .= "<span class='box ellipsis'>{$item->title}</span>";
+                      $str .= "(". $type .", " . $item->status . ")";
+
+                      $tmp .= $str . "<br>";
+                      @endphp
+                  @endforeach
+                  @php $storiesString .= $tmp; @endphp
               @endforeach
+              @php echo $storiesString @endphp
+              </td>
+              <td><p>{{ $revision->end_time_check_story }}</p></td>
+              <td><p>{{ $revision->end_time_run_automate_test }}</p></td>
+              <td><p>{{ $revision->time_get_canary }}</p></td>
+              <td><p></p></td>
+              <td><p>{{ $revision->time_to_elb }}</p></td>
+              <td><p>{{ $revision->description }}</p></td>
             </tr>
             @endforeach
         </tbody>
