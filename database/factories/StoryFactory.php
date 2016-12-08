@@ -16,9 +16,13 @@ use Carbon\Carbon;
 
 $factory->define(App\Models\Story::class, function (Faker\Generator $faker) {
 	$date = Helper::sanitizeDate(Carbon::today()->toDateTimeString(), ' ');
+	$id = Carbon::now()->timestamp;
+	$modNumber = 9999;
+	$id = $id + $faker->randomNumber + rand(10, 100);
+	$fixId = $id % rand(10, $modNumber);
 
     return [
-        'pivotal_id' => $faker->randomNumber + rand(10, 100),
+        'pivotal_id' => $fixId,
         'title' => $faker->name,
         'point' => $faker->randomDigit,
         'project_id' => $faker->randomNumber,
