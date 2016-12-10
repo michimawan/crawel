@@ -1,7 +1,7 @@
 <?php
 
 use Curl\Curl;
-use App\Models\Tag;
+use App\Models\Revision;
 use Carbon\Carbon;
 use App\Lib\Helper;
 
@@ -11,36 +11,36 @@ class StoriesControllerTest extends BaseControllerTest
     {
         $projects = (new Helper())->reverseProjectIds(Config::get('pivotal.projects'));
 
-        $yesterdayDatas = factory(Tag::class, 3)->create([
+        $yesterdayDatas = factory(Revision::class, 3)->create([
             'project' => 'foo',
             'created_at' => Carbon::now()->subDay()
         ]);
 
-        $todayDatas = factory(Tag::class, 3)->create([
+        $todayDatas = factory(Revision::class, 3)->create([
             'project' => 'foo'
         ]);
-        $tag = (new Helper)->grouping($projects, $todayDatas);
+        $rev = (new Helper)->grouping($projects, $todayDatas);
 
         $route = route('stories.index');
         $response = $this->get($route, [])->response;
 
         $this->assertResponseOk();
         $this->assertEquals('stories.index', $response->original->getName());
-        $this->assertViewHas(['tag', 'projects']);
-        $this->assertEquals($tag->pluck('id'), $response->original->tag->pluck('id'));
+        $this->assertViewHas(['rev', 'projects']);
+        $this->assertEquals($rev->pluck('id'), $response->original->rev->pluck('id'));
         $this->assertEquals($projects, $response->original->projects);
     }
 
-    public function test_index_get_yesterday_tag()
+    public function test_index_get_yesterday_rev()
     {
         $projects = (new Helper())->reverseProjectIds(Config::get('pivotal.projects'));
 
         $yesterdayDate = Helper::sanitizeDate(Carbon::today()->subDay()->toDateTimeString(), ' ');
-        $yesterdayDatas = factory(Tag::class, 3)->create([
+        $yesterdayDatas = factory(Revision::class, 3)->create([
             'project' => 'foo'
         ]);
 
-        $tag = (new Helper)->grouping($projects, $yesterdayDatas);
+        $rev = (new Helper)->grouping($projects, $yesterdayDatas);
 
         $route = route('stories.index');
         $response = $this->get($route, [
@@ -49,7 +49,7 @@ class StoriesControllerTest extends BaseControllerTest
 
         $this->assertResponseOk();
         $this->assertEquals('stories.index', $response->original->getName());
-        $this->assertEquals($tag->pluck('id'), $response->original->tag->pluck('id'));
+        $this->assertEquals($rev->pluck('id'), $response->original->rev->pluck('id'));
     }
 
     public function test_create()

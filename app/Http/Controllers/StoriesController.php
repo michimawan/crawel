@@ -11,6 +11,7 @@ use Google_Client as GoogleClient;
 use Google_Service_Sheets as GoogleSpreadSheets;
 use App\Lib\StoryRepository;
 use App\Lib\RevisionRepository;
+use App\Lib\TagRepository;
 use App\Lib\GoogleSheet;
 use App\Lib\StoryHelper;
 use App\Lib\Helper;
