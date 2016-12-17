@@ -50,3 +50,13 @@ Route::get('/auth', [
 Route::resource('revisions', 'RevisionsController', [
     'except' => ['show']
 ]);
+
+Route::get('/revisions/manual-create', [
+    'as' => 'revisions.manual_create',
+    'uses' => 'RevisionsController@manual'
+]);
+
+Route::post('/revisions/manual-store', [
+    'as' => 'revisions.manual_store',
+    'uses' => 'RevisionsController@storeManual'
+]);

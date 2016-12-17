@@ -97,4 +97,37 @@ class Helper
 
         return $selectedGreenTags;
     }
+
+    public static function jenkinsToGitTagging($tag)
+    {
+        $convertedTag = '';
+
+        $mappedMonth = [
+            'Jan' => '01',
+            'Feb' => '02',
+            'Peb' => '02',
+            'Mar' => '03',
+            'Apr' => '04',
+            'Mei' => '05',
+            'May' => '05',
+            'Jun' => '06',
+            'Jul' => '06',
+            'Aug' => '08',
+            'Ag' => '08',
+            'Sep' => '09',
+            'Oct' => '10',
+            'Okt' => '10',
+            'Nov' => '11',
+            'Nop' => '11',
+            'Des' => '12',
+            'Dec' => '12',
+        ];
+        $exploded = explode(' ', $tag);
+        $day = substr($exploded[1], 0, 2);
+        $convertedTag = "HIJAU-{$exploded[2]}-{$mappedMonth[$exploded[0]]}-{$day}_";
+        $time = str_replace(':', '-', $exploded[3]);
+        $convertedTag .= $time;
+
+        return $convertedTag;
+    }
 }

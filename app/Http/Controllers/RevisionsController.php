@@ -58,4 +58,17 @@ class RevisionsController extends Controller
     {
         //
     }
+
+    public function manual()
+    {
+        $project = Config::get('pivotal.projects');
+        $option = [];
+        foreach($project as $key => $p) {
+            $option[$key] = $key;
+        }
+        return view('revisions.manual', [
+            'options' => $option
+        ]);
+    }
+
 }

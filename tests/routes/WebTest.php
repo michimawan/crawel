@@ -78,4 +78,18 @@ class WebTest extends BaseRouteTest
         $this->assertCurrentRouteName('revisions.destroy');
         $this->assertCurrentRouteAction('RevisionsController@destroy');
     }
+
+    public function test_createManualRevisions()
+    {
+        $response = $this->call('GET', '/revisions/manual-create', []);
+        $this->assertCurrentRouteName('revisions.manual_create');
+        $this->assertCurrentRouteAction('RevisionsController@manual');
+    }
+
+    public function test_storeManualRevisions()
+    {
+        $response = $this->call('POST', '/revisions/manual-store', []);
+        $this->assertCurrentRouteName('revisions.manual_store');
+        $this->assertCurrentRouteAction('RevisionsController@storeManual');
+    }
 }

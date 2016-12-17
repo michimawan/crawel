@@ -74,4 +74,14 @@ class RevisionsControllerTest extends BaseControllerTest
         // this part make sure that empty field won't add data on DB
         $this->assertEquals($revisionCount, Revision::count());
     }
+
+    public function test_manual()
+    {
+        $route = route('revisions.manual_create');
+        $response = $this->get($route, [])->response;
+        $this->assertResponseOk();
+        $this->assertEquals('revisions.manual', $response->original->getName());
+        $this->assertViewHas(['options']);
+    }
+
 }
