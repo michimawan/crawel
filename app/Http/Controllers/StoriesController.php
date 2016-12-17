@@ -35,18 +35,6 @@ class StoriesController extends Controller
         ]);
     }
 
-    public function create()
-    {
-        $project = Config::get('pivotal.projects');
-        $option = [];
-        foreach($project as $key => $p) {
-            $option[$key] = $key;
-        }
-        return view('stories.create', [
-            'options' => $option
-        ]);
-    }
-
     public function store(Request $request)
     {
         $stories = $request->input('stories');
@@ -65,10 +53,5 @@ class StoriesController extends Controller
         (new TagRepository())->store($project, $greenTags);
 
         return redirect()->route('stories.index');
-    }
-
-    public function edit(Request $request)
-    {
-        return view('stories.edit');
     }
 }

@@ -9,20 +9,6 @@ class WebTest extends BaseRouteTest
         $this->assertCurrentRouteAction('StoriesController@index');
     }
 
-    public function test_storiesCreate()
-    {
-        $response = $this->call('GET', '/stories/create', []);
-        $this->assertCurrentRouteName('stories.create');
-        $this->assertCurrentRouteAction('StoriesController@create');
-    }
-
-    public function test_storiesStore()
-    {
-        $response = $this->call('POST', '/stories/store', []);
-        $this->assertCurrentRouteName('stories.store');
-        $this->assertCurrentRouteAction('StoriesController@store');
-    }
-
     public function test_mailsCreate()
     {
         $response = $this->call('GET', '/mails/create', []);

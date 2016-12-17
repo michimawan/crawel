@@ -51,40 +51,4 @@ class StoriesControllerTest extends BaseControllerTest
         $this->assertEquals('stories.index', $response->original->getName());
         $this->assertEquals($rev->pluck('id'), $response->original->rev->pluck('id'));
     }
-
-    public function test_create()
-    {
-        $route = route('stories.create');
-        $response = $this->get($route, [])->response;
-        $this->assertResponseOk();
-        $this->assertEquals('stories.create', $response->original->getName());
-        $this->assertViewHas(['options']);
-    }
-
-    public function test_store_success()
-    {
-        $text = ['stories' => '[#211123] foo', 'project' => 'foo'];
-        $path = route('stories.store');
-        $response = $this->call('POST', $path, $text);
-        $this->assertEquals(302, $response->getStatusCode());
-        $this->assertRedirectedToRoute('stories.index');
-    }
-
-    public function test_store_failed()
-    {
-        $text = [];
-        $path = route('stories.store');
-        $response = $this->call('POST', $path, $text);
-        $this->assertEquals(302, $response->getStatusCode());
-        $this->assertRedirectedToRoute('stories.create');
-    }
-
-    public function test_store_empty_field()
-    {
-        $text = [];
-        $path = route('stories.store');
-        $response = $this->call('POST', $path, $text);
-        $this->assertEquals(302, $response->getStatusCode());
-        $this->assertRedirectedToRoute('stories.create');
-    }
 }

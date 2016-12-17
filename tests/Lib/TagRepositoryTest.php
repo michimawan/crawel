@@ -134,32 +134,4 @@ class TagRepositoryTest extends BaseLibTest
         $tagRepo->store('foo', $data);
         $this->assertEquals(3, Tag::where('code', '#1585')->first()->stories->count());
     }
-
-    public function test_getByDate_return_expected_greenTag()
-    {
-        $yesterday = Carbon::now()->subDay();
-        $tag = factory(Tag::class)->create([
-            'created_at' => $yesterday,
-        ]);
-        factory(Tag::class)->create();
-        $tagRepo = new TagRepository();
-
-        $yesterdayDate = Helper::sanitizeDate(Carbon::today()->subDay()->toDateTimeString(), ' ');
-        $this->assertEquals(1, $tagRepo->getByDate($yesterdayDate)->count());
-        $this->assertEquals($tag->id, $tagRepo->getByDate($yesterdayDate)->first()->id);
-    }
-
-    public function test_getByDate_when_no_date_send_return_today()
-    {
-        $yesterday = Carbon::now()->subDay();
-        factory(Tag::class)->create([
-            'created_at' => $yesterday,
-        ]);
-        $tag = factory(Tag::class)->create();
-        $tagRepo = new TagRepository();
-
-        $yesterdayDate = Helper::sanitizeDate(Carbon::today()->subDay()->toDateTimeString(), ' ');
-        $this->assertEquals(1, $tagRepo->getByDate()->count());
-        $this->assertEquals($tag->id, $tagRepo->getByDate()->first()->id);
-    }
 }
