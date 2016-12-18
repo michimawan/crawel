@@ -2,90 +2,62 @@
 
 use App\Models\Revision;
 use App\Models\Tag;
+use App\Lib\Helper;
 use Carbon\Carbon;
 
 class RevisionsControllerTest extends BaseControllerTest
 {
-    public function xtest_index()
+    public function test_index_get_todays_tag()
     {
         $projects = (new Helper())->reverseProjectIds(Config::get('pivotal.projects'));
 
-        $yesterdayDatas = factory(Tag::class, 3)->create([
+        $yesterdayDatas = factory(Revision::class, 3)->create([
             'project' => 'foo',
             'created_at' => Carbon::now()->subDay()
         ]);
 
-        $todayDatas = factory(Tag::class, 3)->create([
+        $todayDatas = factory(Revision::class, 3)->create([
             'project' => 'foo'
         ]);
-        $tag = (new Helper)->grouping($projects, $todayDatas);
+        $rev = (new Helper)->grouping($projects, $todayDatas);
 
         $route = route('revisions.index');
         $response = $this->get($route, [])->response;
 
         $this->assertResponseOk();
         $this->assertEquals('revisions.index', $response->original->getName());
-        $this->assertViewHas(['tag', 'projects']);
-        $this->assertEquals($tag->pluck('id'), $response->original->tag->pluck('id'));
+        $this->assertViewHas(['rev', 'projects']);
+        $this->assertEquals($rev->pluck('id'), $response->original->rev->pluck('id'));
         $this->assertEquals($projects, $response->original->projects);
     }
 
-    public function xtest_create()
+    public function test_index_get_yesterday_rev()
+    {
+        $projects = (new Helper())->reverseProjectIds(Config::get('pivotal.projects'));
+
+        $yesterdayDate = Helper::sanitizeDate(Carbon::today()->subDay()->toDateTimeString(), ' ');
+        $yesterdayDatas = factory(Revision::class, 3)->create([
+            'project' => 'foo'
+        ]);
+
+        $rev = (new Helper)->grouping($projects, $yesterdayDatas);
+
+        $route = route('revisions.index');
+        $response = $this->get($route, [
+            'date' => $yesterdayDate
+        ])->response;
+
+        $this->assertResponseOk();
+        $this->assertEquals('revisions.index', $response->original->getName());
+        $this->assertEquals($rev->pluck('id'), $response->original->rev->pluck('id'));
+    }
+
+    public function test_create()
     {
         $route = route('revisions.create');
         $response = $this->get($route, [])->response;
         $this->assertResponseOk();
         $this->assertEquals('revisions.create', $response->original->getName());
-        $this->assertViewHas(['greenTags', 'projects']);
-    }
-
-    public function xtest_store_success()
-    {
-        $text = ['revisions' => '[#211123] foo', 'project' => 'foo'];
-        $path = route('revisions.store');
-        $response = $this->call('POST', $path, $text);
-        $this->assertEquals(302, $response->getStatusCode());
-        $this->assertRedirectedToRoute('stories.index');
-    }
-
-    public function xtest_store_failed()
-    {
-        $tag = factory(Tag::class)->create([
-            'project' => 'foo'
-        ]);
-        $text = [
-            'foo_tags' => $tag->id,
-        ];
-        $path = route('revisions.store');
-        $response = $this->call('POST', $path, $text);
-        $this->assertEquals(302, $response->getStatusCode());
-        $this->assertRedirectedToRoute('revisions.create');
-    }
-
-    public function xtest_store_empty_field()
-    {
-        $text = [];
-        $path = route('revisions.store');
-        $revisionCount = Revision::count();
-        $response = $this->call('POST', $path, $text);
-        $this->assertEquals(302, $response->getStatusCode());
-        $this->assertRedirectedToRoute('stories.index');
-
-        // this part make sure that empty field won't add data on DB
-        $this->assertEquals($revisionCount, Revision::count());
-    }
-
-    public function test_manual()
-    {
-        $route = route('revisions.manual_create');
-        $response = $this->get($route, [])->response;
-        $this->assertResponseOk();
-        $this->assertEquals('revisions.manual', $response->original->getName());
         $this->assertViewHas(['options']);
-    }
-
-    public function test_storeManual()
-    {
-        $childTag = "foo";
     }
 }

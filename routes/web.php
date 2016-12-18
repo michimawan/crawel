@@ -12,8 +12,8 @@
  */
 
 Route::get('/', [
-    'as' => 'stories.index',
-    'uses' => 'StoriesController@index'
+    'as' => 'revisions.index',
+    'uses' => 'RevisionsController@index'
 ]);
 
 Route::get('/mails/create', [
@@ -32,15 +32,6 @@ Route::get('/auth', [
 ]);
 
 Route::resource('revisions', 'RevisionsController', [
-    'except' => ['show']
+    'except' => ['show', 'destroy', 'index']
 ]);
 
-Route::get('/revisions/manual-create', [
-    'as' => 'revisions.manual_create',
-    'uses' => 'RevisionsController@manual'
-]);
-
-Route::post('/revisions/manual-store', [
-    'as' => 'revisions.manual_store',
-    'uses' => 'RevisionsController@storeManual'
-]);

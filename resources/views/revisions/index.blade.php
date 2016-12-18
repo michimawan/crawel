@@ -6,7 +6,7 @@
 <div class="container">
 <div class="row">
 {!! Form::open([
-  'route' => 'stories.index',
+  'route' => 'revisions.index',
   'method' => 'GET',
   'class' => '']) !!}
   {!! Form::text('date', '', ['class' => 'btn-small', 'id' => 'datepicker']) !!}
@@ -15,9 +15,6 @@
 </div>
 <div class="row">
   <ul class="navbar-right btn btn-group">
-    <a id="create-child-tag-rev" href="{{ route('revisions.create') }}" class="btn btn-default btn-sm">
-      <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Create Child Tag Revisions
-    </a>
     <a id="create-daily-mail" href="{{ route('mails.create') }}" class="btn btn-default btn-sm">
       <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Create Daily Mail
     </a>
@@ -33,7 +30,7 @@
     @endphp
     @foreach($projects as $projectName => $projectIds)
         <div role="tabpanel" class="tab-pane{!! $active !!}" id="{{ $projectName }}">
-        @include('stories._data', [
+        @include('revisions._data', [
             'projectName' => $projectName,
             'rev' => is_null($rev->get($projectName)) ? collect() : $rev->get($projectName)->values(),
             'projectIds' => $projectIds

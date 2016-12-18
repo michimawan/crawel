@@ -78,7 +78,7 @@ class MailsController extends Controller
             Log::error($e->getTraceAsString());
             return Redirect::route('mails.create');
         }
-        return Redirect::route('stories.index');
+        return Redirect::route('revisions.index');
     }
 
     public function auth(Request $request)

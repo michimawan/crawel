@@ -15,34 +15,41 @@ use View;
 
 class RevisionsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $date = $request->input('date') ? $request->input('date') : null;
+
+        $projects = Config::get('pivotal.projects');
+        $projects = (new Helper)->reverseProjectIds($projects);
+        $rev = (new RevisionRepository)->getByDate($date);
+
+        $rev = (new Helper)->grouping($projects, $rev);
+
+        return view('revisions.index', [
+            'rev' => $rev,
+            'projects' => $projects,
+        ]);
     }
 
     public function create()
     {
-        $startDate = Carbon::today()->subDays(7);
-        $endDate = Carbon::today()->addDay();
-        $tag = Tag::where('created_at', '>=', $startDate)->where('created_at', '<=', $endDate)->get();
-        $projects = Config::get('pivotal.projects');
-        $projects = (new Helper)->reverseProjectIds($projects);
-
-        $tag = (new Helper)->grouping($projects, $tag);
-        return View::make('revisions.create', [
-            'greenTags' => $tag,
-            'projects' => $projects,
+        $project = Config::get('pivotal.projects');
+        $option = [];
+        foreach($project as $key => $p) {
+            $option[$key] = $key;
+        }
+        return view('revisions.create', [
+            'options' => $option
         ]);
     }
 
     public function store(Request $request)
     {
-        $properties = (new RevisionRepository)->getProperties($request);
-        $selectedGreenTags = (new Helper)->getSelectedGreenTags($request);
-        $status = (new RevisionRepository)->store($properties, $selectedGreenTags);
-        if ($status) {
-            return Redirect::route('stories.index');
-        }
-        return Redirect::route('revisions.create');
+        $childTagRev = $request->input('child_tag_rev');
+        $workspace = $request->input('workspace');
+        (new StoreRevision($workspace, $childTagRev))->process();
+
+        return Redirect::route('revisions.index');
     }
 
     public function edit($id)
@@ -53,31 +60,5 @@ class RevisionsController extends Controller
     public function update(Request $request, $id)
     {
         //
-    }
-
-    public function destroy($id)
-    {
-        //
-    }
-
-    public function manual()
-    {
-        $project = Config::get('pivotal.projects');
-        $option = [];
-        foreach($project as $key => $p) {
-            $option[$key] = $key;
-        }
-        return view('revisions.manual', [
-            'options' => $option
-        ]);
-    }
-
-    public function storeManual(Request $request)
-    {
-        $childTagRev = $request->input('child_tag_rev');
-        $workspace = $request->input('workspace');
-        (new StoreRevision($workspace, $childTagRev))->process();
-
-        return Redirect::route('stories.index');
     }
 }

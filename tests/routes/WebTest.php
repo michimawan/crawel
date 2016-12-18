@@ -5,8 +5,8 @@ class WebTest extends BaseRouteTest
     public function test_route()
     {
         $response = $this->call('GET', '/', []);
-        $this->assertCurrentRouteName('stories.index');
-        $this->assertCurrentRouteAction('StoriesController@index');
+        $this->assertCurrentRouteName('revisions.index');
+        $this->assertCurrentRouteAction('RevisionsController@index');
     }
 
     public function test_mailsCreate()
@@ -21,13 +21,6 @@ class WebTest extends BaseRouteTest
         $response = $this->call('POST', '/mails/send', []);
         $this->assertCurrentRouteName('mails.send');
         $this->assertCurrentRouteAction('MailsController@send');
-    }
-
-    public function test_revisionsIndex()
-    {
-        $response = $this->call('GET', '/revisions', []);
-        $this->assertCurrentRouteName('revisions.index');
-        $this->assertCurrentRouteAction('RevisionsController@index');
     }
 
     public function test_revisionsCreate()
@@ -56,26 +49,5 @@ class WebTest extends BaseRouteTest
         $response = $this->call('PUT', '/revisions/1', []);
         $this->assertCurrentRouteName('revisions.update');
         $this->assertCurrentRouteAction('RevisionsController@update');
-    }
-
-    public function test_revisionsDelete()
-    {
-        $response = $this->call('DELETE', '/revisions/1', []);
-        $this->assertCurrentRouteName('revisions.destroy');
-        $this->assertCurrentRouteAction('RevisionsController@destroy');
-    }
-
-    public function test_createManualRevisions()
-    {
-        $response = $this->call('GET', '/revisions/manual-create', []);
-        $this->assertCurrentRouteName('revisions.manual_create');
-        $this->assertCurrentRouteAction('RevisionsController@manual');
-    }
-
-    public function test_storeManualRevisions()
-    {
-        $response = $this->call('POST', '/revisions/manual-store', []);
-        $this->assertCurrentRouteName('revisions.manual_store');
-        $this->assertCurrentRouteAction('RevisionsController@storeManual');
     }
 }
