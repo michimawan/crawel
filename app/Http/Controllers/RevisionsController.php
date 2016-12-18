@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Redirect;
 use Config;
 
+use App\Lib\StoreRevision;
 use App\Lib\RevisionRepository;
 use App\Http\Requests;
 use App\Models\Tag;
@@ -71,4 +72,12 @@ class RevisionsController extends Controller
         ]);
     }
 
+    public function storeManual(Request $request)
+    {
+        $childTagRev = $request->input('child_tag_rev');
+        $workspace = $request->input('workspace');
+        (new StoreRevision($workspace, $childTagRev))->process();
+
+        return Redirect::route('stories.index');
+    }
 }

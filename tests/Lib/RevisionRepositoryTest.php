@@ -9,6 +9,14 @@ class RevisionRepositoryTest extends BaseLibTest
 {
     public function test_store()
     {
+        $tagRev = "#117 (Nov 13, 2015 12:17:18 PM)";
+        $revisionCount = Revision::count();
+
+        $revRepo = new RevisionRepository();
+        list($status, $rev) = $revRepo->store($tagRev, 'foo');
+
+        $this->assertTrue($status);
+        $this->assertEquals($revisionCount + 1, Revision::count());
     }
 
     public function test_getByDate_return_expected_greenTag()

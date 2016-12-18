@@ -8,8 +8,8 @@
 <div class="container">
   <div class="form-group">
     <div class="col-sm-10">
-      {!! Form::label('project', 'Choose Input Project', ['class' => '']) !!}
-      {!! Form::select('project', $options, ['class' => 'form-control']) !!}
+      {!! Form::label('workspace', 'Choose Input Project', ['class' => '']) !!}
+      {!! Form::select('workspace', $options, ['class' => 'form-control']) !!}
     </div>
   </div>
 

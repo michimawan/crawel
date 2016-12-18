@@ -9,6 +9,16 @@ use App\Models\Revision;
 
 class RevisionRepository
 {
+    public function store($tagRev = '', $workspace)
+    {
+        $rev = new Revision;
+        $rev->child_tag_revisions = $tagRev;
+        $rev->project = $workspace;
+
+        $status = $rev->save();
+        return [$status, $rev];
+    }
+
     /**
      * @return Collection of Tag based on date parameter
      *

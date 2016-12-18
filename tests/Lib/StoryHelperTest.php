@@ -41,7 +41,7 @@ STRING;
         $this->assertEquals($expected, $parser->parse($stories));
     }
 
-    public function test_parseGreenTag()
+    public function test_parseJenkinsTag()
     {
         $text = <<<TEXT
 #1587 (Oct 20, 2016 5:23:39 PM)
@@ -77,58 +77,104 @@ TEXT;
                 'greenTagTiming' => 'Oct 18, 2016 7:36:11 PM',
             ],
         ];
-        $this->assertEquals($expected, StoryHelper::parseGreenTag($text));
+        $this->assertEquals($expected, StoryHelper::parseJenkinsTag($text));
+    }
+
+    public function test_parseGitTag()
+    {
+        $text = '- (tag: HIJAU-2015-06-01_13-12-49) foo bar';
+        list($found, $matches) = StoryHelper::parseGitTag($text);
+        $this->assertEquals(1, $found);
+
+        $text = '- [#123] [FIX TEST] foo bar';
+        list($found, $matches) = StoryHelper::parseGitTag($text);
+        $this->assertEquals(0, $found);
+
+        $text = '- (tag: FOO_HIJAU-2015-06-01_13-12-49) foo bar';
+        list($found, $matches) = StoryHelper::parseGitTag($text);
+        $this->assertEquals(1, $found);
+    }
+
+    public function test_parseGitTags()
+    {
+        $text = <<<TEXT
+- (tag: HIJAU-2015-06-01_13-12-49) foo bar
+- [#123] [FIX TEST] foo bar
+- [#123] [FIX TEST] bobobo
+- [finished #123] foooo
+- (tag: HIJAU-2015-06-01_13-07-43) foo bar
+- [finished #133] yoyo
+- (tag: HIJAU-2015-06-01_13-16-28) foo bar
+- [finished #135308217] Add blank  foo bar
+- (tag: HIJAU-2015-06-01_13-50-53) foo bar
+- [#123] yoyoyo
+TEXT;
+
+        $expected = [
+            'tag: HIJAU-2015-06-01_13-12-49' => [
+                'greenTagId' => 'tag: HIJAU-2015-06-01_13-12-49',
+                'greenTagTiming' => '2015-06-01_13-12-49',
+            ],
+            'tag: HIJAU-2015-06-01_13-07-43' => [
+                'greenTagId' => 'tag: HIJAU-2015-06-01_13-07-43',
+                'greenTagTiming' => '2015-06-01_13-07-43',
+            ],
+            'tag: HIJAU-2015-06-01_13-16-28' => [
+                'greenTagId' => 'tag: HIJAU-2015-06-01_13-16-28',
+                'greenTagTiming' => '2015-06-01_13-16-28',
+            ],
+            'tag: HIJAU-2015-06-01_13-50-53' => [
+                'greenTagId' => 'tag: HIJAU-2015-06-01_13-50-53',
+                'greenTagTiming' => '2015-06-01_13-50-53',
+            ],
+        ];
+        $this->assertEquals($expected, StoryHelper::parseGitTags($text));
     }
 
     public function test_add_stories_to_green_tag_data()
     {
         $text = <<<TEXT
-#1587 (Oct 20, 2016 5:23:39 PM)
-
-[finished #111][klikdokter] list of sub-channels from Rubrik — pair+himawan+pinto / githubweb
-#1586 (Oct 20, 2016 4:42:04 PM)
-
-[ref #211] change <?php to <?hh for files containing xhp — pair+ata+fadhil+nofriandi / githubweb
-[ref #212] remove all type hints in properties — pair+ata+fadhil+nofriandi / githubweb
-[ref #213] remove nullable type hints — pair+ata+fadhil+nofriandi / githubweb
-[ref #214] temporarily comment out scalar type hints — pair+ata+fadhil+nofriandi / githubweb
-[ref #215] add utility scripts — pair+ata+fadhil+nofriandi / githubweb
-#1583 (Oct 19, 2016 6:41:41 PM)
-
-[#311][klikdokter] importer data health topics beserta author dan — firodj / githubweb
-[#312][klikdokter] add health topcis slide as multi page health — firodj / githubweb
-[#313][klikdokter] remove nonsense KADE_DOMAIN env var and — firodj / githubweb
-[finished #314][Consumption] bash cache for related article — pair+ardhan+burhan / githubweb
-#1582 (Oct 18, 2016 7:36:11 PM)
-
-[finished #411] Implement Feature Toggle Line Tag Fallback — pair+byan+yahya / githubweb
-[finished #412] Disable responsive feature on content promotion — pair+enang / githubweb
+- (tag: HIJAU-2015-06-01_13-12-49) [#120] foo bar
+- [#121] [FIX TEST] foo bar
+- [#122] [FIX TEST] bobobo
+- [finished #123] foooo
+- (tag: HIJAU-2015-06-01_13-07-43) [#130]foo bar
+- [finished #131] yoyo
+- (tag: HIJAU-2015-06-01_13-16-28)[#140] foo bar
+- [finished #141] Add blank  foo bar
+- (tag: HIJAU-2015-06-01_13-50-53) [#151]foo bar
+- [#152] yoyoyo
+- (tag: HIJAU-2015-05-01_13-50-53) [#161]foo bar
 TEXT;
 
-
         $greenTags = [
-            '#1587 (Oct 20, 2016 5:23:39 PM)' => [
+            'tag: HIJAU-2015-06-01_13-12-49' => [
             ],
-            '#1586 (Oct 20, 2016 4:42:04 PM)' => [
+            'tag: HIJAU-2015-06-01_13-07-43' => [
             ],
-            '#1583 (Oct 19, 2016 6:41:41 PM)' => [
+            'tag: HIJAU-2015-06-01_13-16-28' => [
             ],
-            '#1582 (Oct 18, 2016 7:36:11 PM)' => [
+            'tag: HIJAU-2015-06-01_13-50-53' => [
             ],
+            'tag: HIJAU-2015-05-01_13-50-53' => [
+            ]
         ];
         $expected = [
-            '#1587 (Oct 20, 2016 5:23:39 PM)' => [
-                'stories' => [111]
+            'tag: HIJAU-2015-06-01_13-12-49' => [
+                'stories' => [120, 121, 122, 123]
             ],
-            '#1586 (Oct 20, 2016 4:42:04 PM)' => [
-                'stories' => [211, 212, 213, 214, 215]
+            'tag: HIJAU-2015-06-01_13-07-43' => [
+                'stories' => [130, 131]
             ],
-            '#1583 (Oct 19, 2016 6:41:41 PM)' => [
-                'stories' => [311, 312, 313, 314]
+            'tag: HIJAU-2015-06-01_13-16-28' => [
+                'stories' => [140, 141]
             ],
-            '#1582 (Oct 18, 2016 7:36:11 PM)' => [
-                'stories' => [411, 412]
+            'tag: HIJAU-2015-06-01_13-50-53' => [
+                'stories' => [151, 152]
             ],
+            'tag: HIJAU-2015-05-01_13-50-53' => [
+                'stories' => [161]
+            ]
         ];
         $this->assertEquals($expected, StoryHelper::addStoriesToGreenTag($greenTags, $text));
     }
@@ -136,49 +182,36 @@ TEXT;
     public function test_add_stories_to_green_tag_data_when_greenTags_has_no_stories()
     {
         $text = <<<TEXT
-#1587 (Oct 20, 2016 5:23:39 PM)
-
-[finished #111][klikdokter] list of sub-channels from Rubrik — pair+himawan+pinto / githubweb
-#1586 (Oct 20, 2016 4:42:04 PM)
-
-[ref #211] change <?php to <?hh for files containing xhp — pair+ata+fadhil+nofriandi / githubweb
-[ref #212] remove all type hints in properties — pair+ata+fadhil+nofriandi / githubweb
-[ref #213] remove nullable type hints — pair+ata+fadhil+nofriandi / githubweb
-[ref #214] temporarily comment out scalar type hints — pair+ata+fadhil+nofriandi / githubweb
-[ref #215] add utility scripts — pair+ata+fadhil+nofriandi / githubweb
-#1583 (Oct 19, 2016 6:41:41 PM)
-
-[#311][klikdokter] importer data health topics beserta author dan — firodj / githubweb
-[#312][klikdokter] add health topcis slide as multi page health — firodj / githubweb
-[#313][klikdokter] remove nonsense KADE_DOMAIN env var and — firodj / githubweb
-[finished #314][Consumption] bash cache for related article — pair+ardhan+burhan / githubweb
-#1582 (Oct 18, 2016 7:36:11 PM)
-
+- (tag: HIJAU-2015-06-01_13-12-49) [#120] foo bar
+- [#121] [FIX TEST] foo bar
+- [#122] [FIX TEST] bobobo
+- [finished #123] foooo
+- (tag: HIJAU-2015-06-01_13-07-43) [#130]foo bar
+- [finished #131] yoyo
+- (tag: HIJAU-2015-06-01_13-16-28)foo bar
+- (tag: HIJAU-2015-06-01_13-50-53)[#140] foo bar
+- [finished #141] Add blank  foo bar
 TEXT;
 
-
         $greenTags = [
-            '#1587 (Oct 20, 2016 5:23:39 PM)' => [
+            'tag: HIJAU-2015-06-01_13-12-49' => [
             ],
-            '#1586 (Oct 20, 2016 4:42:04 PM)' => [
+            'tag: HIJAU-2015-06-01_13-07-43' => [
             ],
-            '#1583 (Oct 19, 2016 6:41:41 PM)' => [
+            'tag: HIJAU-2015-06-01_13-16-28' => [
             ],
-            '#1582 (Oct 18, 2016 7:36:11 PM)' => [
+            'tag: HIJAU-2015-06-01_13-50-53' => [
             ],
         ];
         $expected = [
-            '#1587 (Oct 20, 2016 5:23:39 PM)' => [
-                'stories' => [111]
+            'tag: HIJAU-2015-06-01_13-12-49' => [
+                'stories' => [120, 121, 122, 123]
             ],
-            '#1586 (Oct 20, 2016 4:42:04 PM)' => [
-                'stories' => [211, 212, 213, 214, 215]
+            'tag: HIJAU-2015-06-01_13-07-43' => [
+                'stories' => [130, 131]
             ],
-            '#1583 (Oct 19, 2016 6:41:41 PM)' => [
-                'stories' => [311, 312, 313, 314]
-            ],
-            '#1582 (Oct 18, 2016 7:36:11 PM)' => [
-                'stories' => []
+            'tag: HIJAU-2015-06-01_13-50-53' => [
+                'stories' => [140, 141]
             ],
         ];
         $this->assertEquals($expected, StoryHelper::addStoriesToGreenTag($greenTags, $text));
@@ -187,44 +220,42 @@ TEXT;
     public function test_parseText()
     {
         $text = <<<TEXT
-#1587 (Oct 20, 2016 5:23:39 PM)
-
-[finished #111][klikdokter] list of sub-channels from Rubrik — pair+himawan+pinto / githubweb
-#1586 (Oct 20, 2016 4:42:04 PM)
-
-[ref #211] change <?php to <?hh for files containing xhp — pair+ata+fadhil+nofriandi / githubweb
-[ref #212] remove all type hints in properties — pair+ata+fadhil+nofriandi / githubweb
-[ref #213] remove nullable type hints — pair+ata+fadhil+nofriandi / githubweb
-[ref #214] temporarily comment out scalar type hints — pair+ata+fadhil+nofriandi / githubweb
-[ref #215] add utility scripts — pair+ata+fadhil+nofriandi / githubweb
-#1583 (Oct 19, 2016 6:41:41 PM)
-
-[#311][klikdokter] importer data health topics beserta author dan — firodj / githubweb
-[#312][klikdokter] add health topcis slide as multi page health — firodj / githubweb
-[#313][klikdokter] remove nonsense KADE_DOMAIN env var and — firodj / githubweb
-[finished #314][Consumption] bash cache for related article — pair+ardhan+burhan / githubweb
-
+- (tag: HIJAU-2015-06-01_13-12-49) [#120] foo bar
+- [#121] [FIX TEST] foo bar
+- [#122] [FIX TEST] bobobo
+- [finished #123] foooo
+- (tag: HIJAU-2015-06-01_13-07-43) [#130]foo bar
+- [finished #131] yoyo
+- (tag: HIJAU-2015-06-01_13-16-28)[#140] foo bar
+- [finished #141] Add blank  foo bar
+- (tag: HIJAU-2015-06-01_13-50-53) [#151]foo bar
+- [#152] yoyoyo
 TEXT;
 
         $greenTags = [
-            '#1587 (Oct 20, 2016 5:23:39 PM)' => [
-                'greenTagId' => '#1587',
-                'greenTagTiming' => 'Oct 20, 2016 5:23:39 PM',
-                'stories' => [111]
+            'tag: HIJAU-2015-06-01_13-12-49' => [
+                'greenTagId' => 'tag: HIJAU-2015-06-01_13-12-49',
+                'greenTagTiming' => '2015-06-01_13-12-49',
+                'stories' => [120, 121, 122, 123]
             ],
-            '#1586 (Oct 20, 2016 4:42:04 PM)' => [
-                'greenTagId' => '#1586',
-                'greenTagTiming' => 'Oct 20, 2016 4:42:04 PM',
-                'stories' => [211, 212, 213, 214, 215]
+            'tag: HIJAU-2015-06-01_13-07-43' => [
+                'greenTagId' => 'tag: HIJAU-2015-06-01_13-07-43',
+                'greenTagTiming' => '2015-06-01_13-07-43',
+                'stories' => [130, 131]
             ],
-            '#1583 (Oct 19, 2016 6:41:41 PM)' => [
-                'greenTagId' => '#1583',
-                'greenTagTiming' => 'Oct 19, 2016 6:41:41 PM',
-                'stories' => [311, 312, 313, 314]
+            'tag: HIJAU-2015-06-01_13-16-28' => [
+                'greenTagId' => 'tag: HIJAU-2015-06-01_13-16-28',
+                'greenTagTiming' => '2015-06-01_13-16-28',
+                'stories' => [140, 141]
+            ],
+            'tag: HIJAU-2015-06-01_13-50-53' => [
+                'greenTagId' => 'tag: HIJAU-2015-06-01_13-50-53',
+                'greenTagTiming' => '2015-06-01_13-50-53',
+                'stories' => [151, 152]
             ],
         ];
 
-        $storyIds = [111, 211, 212, 213, 214, 215, 311, 312, 313, 314];
+        $storyIds = [120, 121, 122, 123, 130, 131, 140, 141, 151, 152];
         $expected = [$greenTags, $storyIds];
         $this->assertEquals($expected, StoryHelper::parseText($text));
     }
