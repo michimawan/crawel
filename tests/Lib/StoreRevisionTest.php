@@ -53,7 +53,7 @@ class StoreRevisionTest extends BaseLibTest
         $storeRevision->shouldReceive('storeTagsAndStories')
             ->once()
             ->with('some string')
-            ->andReturn(true);
+            ->andReturn(collect());
 
         $result = $storeRevision->process();
         $this->assertTrue($result);

@@ -133,47 +133,20 @@ TEXT;
 
     public function test_add_stories_to_green_tag_data()
     {
-        $text = <<<TEXT
-- (tag: HIJAU-2015-06-01_13-12-49) [#120] foo bar
-- [#121] [FIX TEST] foo bar
-- [#122] [FIX TEST] bobobo
-- [finished #123] foooo
-- (tag: HIJAU-2015-06-01_13-07-43) [#130]foo bar
-- [finished #131] yoyo
-- (tag: HIJAU-2015-06-01_13-16-28)[#140] foo bar
-- [finished #141] Add blank  foo bar
-- (tag: HIJAU-2015-06-01_13-50-53) [#151]foo bar
-- [#152] yoyoyo
-- (tag: HIJAU-2015-05-01_13-50-53) [#161]foo bar
-TEXT;
 
+$text = 'fbbb596 (tag: VIDIO-2016-12-20_10-57-18) [#136334115] Erro 500 Get /live/id\n30781a1 (tag: VIDIO-2016-12-20_10-28-38) [#136329825] Add migration add mv_livestreaming_concurrent_users';
         $greenTags = [
-            'tag: HIJAU-2015-06-01_13-12-49' => [
+            'tag: VIDIO-2016-12-20_10-57-18' => [
             ],
-            'tag: HIJAU-2015-06-01_13-07-43' => [
-            ],
-            'tag: HIJAU-2015-06-01_13-16-28' => [
-            ],
-            'tag: HIJAU-2015-06-01_13-50-53' => [
-            ],
-            'tag: HIJAU-2015-05-01_13-50-53' => [
+            'tag: VIDIO-2016-12-20_10-28-38' => [
             ]
         ];
         $expected = [
-            'tag: HIJAU-2015-06-01_13-12-49' => [
-                'stories' => [120, 121, 122, 123]
+            'tag: VIDIO-2016-12-20_10-57-18' => [
+                'stories' => [136334115]
             ],
-            'tag: HIJAU-2015-06-01_13-07-43' => [
-                'stories' => [130, 131]
-            ],
-            'tag: HIJAU-2015-06-01_13-16-28' => [
-                'stories' => [140, 141]
-            ],
-            'tag: HIJAU-2015-06-01_13-50-53' => [
-                'stories' => [151, 152]
-            ],
-            'tag: HIJAU-2015-05-01_13-50-53' => [
-                'stories' => [161]
+            'tag: VIDIO-2016-12-20_10-28-38' => [
+                'stories' => [136329825]
             ]
         ];
         $this->assertEquals($expected, StoryHelper::addStoriesToGreenTag($greenTags, $text));

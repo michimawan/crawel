@@ -15,6 +15,9 @@ return [
 			'bar-4' => 3211234,
 			'bar-5' => 3212222,
 		],
+	'repo_prefix' => [
+		'foo' => 'HIJAU',
+		'bar' => 'HIJAU',
 	],
 	'repo_path' => [
 		'foo' => '~/this_repository/',

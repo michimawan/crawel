@@ -98,7 +98,7 @@ class Helper
         return $selectedGreenTags;
     }
 
-    public static function jenkinsToGitTagging($tag)
+    public static function jenkinsToGitTagging($workspace, $tag)
     {
         $convertedTag = '';
 
@@ -124,7 +124,8 @@ class Helper
         ];
         $exploded = explode(' ', $tag);
         $day = substr($exploded[1], 0, 2);
-        $convertedTag = "HIJAU-{$exploded[2]}-{$mappedMonth[$exploded[0]]}-{$day}_";
+        $workspace = Config::get('pivotal.repo_prefix')[$workspace];
+        $convertedTag = "{$workspace}-{$exploded[2]}-{$mappedMonth[$exploded[0]]}-{$day}_";
         $time = str_replace(':', '-', $exploded[3]);
         $convertedTag .= $time;
 

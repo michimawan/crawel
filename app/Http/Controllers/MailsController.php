@@ -14,6 +14,7 @@ use View;
 use App\Lib\TagRepository;
 use App\Models\Revision;
 use App\Lib\Helper;
+use App\Lib\StoryHelper;
 
 class MailsController extends Controller
 {
@@ -58,7 +59,7 @@ class MailsController extends Controller
     public function send(Request $request)
     {
         $selectedRevisions = Helper::getSelectedRevisions($request);
-        $stringMessage = Helper::prepareForMail($selectedRevisions);
+        $stringMessage = StoryHelper::prepareForMail($selectedRevisions);
 
         $client = $this->setUpGoogleClient();
         $client->setAccessToken($request->session()->get('access_token'));

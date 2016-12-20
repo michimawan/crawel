@@ -36,13 +36,16 @@ class StoreRevision
         }
 
         $gitLog = $this->getGitLog($upperLimit, $bottomLimit);
+        $gitLog = str_replace('"', "'", $gitLog);
         if (empty($gitLog)) {
             return false;
         }
 
         list ($status, $rev) = $this->storeRevision($upperLimit);
         if ($status) {
-            return $this->storeTagsAndStories($gitLog);
+            $tags = $this->storeTagsAndStories($gitLog);
+            $rev->syncTags($tags->pluck('id')->all());
+            return true;
         }
 
         return false;
@@ -60,9 +63,9 @@ class StoreRevision
 
         $responses = (new Curler())->curl($this->workspace, $ids, $this->curl);
         (new StoryRepository())->store($responses);
-        (new TagRepository())->store($this->workspace, $greenTags);
+        $tags = (new TagRepository())->store($this->workspace, $greenTags);
 
-        return true;
+        return $tags;
     }
 
     public function createUpperLimit($childTagRev)
@@ -72,7 +75,7 @@ class StoreRevision
             return '';
         }
 
-        return Helper::jenkinsToGitTagging($parsedGreenTag[$childTagRev]['greenTagTiming']);
+        return Helper::jenkinsToGitTagging($this->workspace, $parsedGreenTag[$childTagRev]['greenTagTiming']);
     }
 
     public function getBottomLimit()
@@ -92,6 +95,8 @@ class StoreRevision
         $baseCommand = Config::get('git.command.base');
         $gitCommand = "{$baseCommand} {$upperLimit}...{$bottomLimit}";
         $gitDirectory = Config::get('pivotal.repo_path')[$this->workspace];
-        return shell_exec("cd {$gitDirectory}; {$gitCommand}");
+        $gitLog = "";
+        exec("cd {$gitDirectory}; {$gitCommand}", $gitLog);
+        return str_replace('"', "'", join('\n', $gitLog));
     }
 }

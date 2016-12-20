@@ -112,7 +112,15 @@ class StoryHelper
      */
     public static function addStoriesToGreenTag($greenTags = [], $text = '')
     {
-        $lines = preg_split("/\\r\\n|\\r|\\n/", $text);
+        $pattern = '/\\r\\n|\\r|\\n/i';
+        $regexLines = preg_split($pattern, $text);
+        $explodeLines = explode('\n', str_replace(['\r\n', '\r'], '\n', $text));
+
+        if (count($regexLines) >= count($explodeLines)) {
+            $lines = $regexLines;
+        } elseif(count($regexLines) < count($explodeLines)) {
+            $lines = $explodeLines;
+        }
         $greenTagsString = array_keys($greenTags);
 
         $lineCount = count($lines);

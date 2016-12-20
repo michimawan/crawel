@@ -13,13 +13,14 @@ use App\Models\Tag;
 class TagRepository
 {
     /**
-     * @return void
+     * @return Collection stored tags
      *
      * @param string name of selected workspace
      * @param array of formatted Tags
      */
     public function store($project, $tags)
     {
+        $storedTags = collect();
         foreach ($tags as $greenTag) {
             $tag = new Tag;
             $tag->code = $greenTag['greenTagId'];
@@ -36,8 +37,11 @@ class TagRepository
                     Log::info($e->getTraceAsString());
                 }
                 $tag->syncStories($ids);
+                $storedTags->push($tag);
             }
         }
+
+        return $storedTags;
     }
 
     /**

@@ -142,6 +142,6 @@ class HelperTest extends BaseLibTest
      */
     public function test_jenkinsToGitTagging($tag, $expected)
     {
-        $this->assertEquals($expected, Helper::jenkinsToGitTagging($tag));
+        $this->assertEquals($expected, Helper::jenkinsToGitTagging('foo', $tag));
     }
 }

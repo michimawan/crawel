@@ -47,6 +47,9 @@ class RevisionsController extends Controller
     {
         $childTagRev = $request->input('child_tag_rev');
         $workspace = $request->input('workspace');
+        if (is_null($childTagRev) || is_null($workspace)) {
+            return Redirect::route('revisions.index');
+        }
         (new StoreRevision($workspace, $childTagRev))->process();
 
         return Redirect::route('revisions.index');

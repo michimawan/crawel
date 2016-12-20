@@ -38,8 +38,9 @@ class TagRepositoryTest extends BaseLibTest
     {
         $tagCount = Tag::count();
         $tagRepo = new TagRepository();
-        $tagRepo->store('foo', $this->data);
+        $tags = $tagRepo->store('foo', $this->data);
 
+        $this->assertEquals(2, $tags->count());
         $this->assertEquals($tagCount + 2, Tag::count());
         $this->assertEquals(5, Tag::where('code', '#1587')->first()->stories->count());
 
