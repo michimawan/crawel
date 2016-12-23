@@ -4,7 +4,6 @@
     <table class="table table-bordered table-striped table-hover">
         <thead class="thead-default">
             <tr>
-              <th>No</th>
               <th>Date</th>
               <th>Revision</th>
               <th>Get Greentag Timing</th>
@@ -22,8 +21,7 @@
             <tr>
 
               <?php $number = 1; ?>
-              <td> {{ $number++ . "." }} </td>
-              <td>date</td>
+              <td>{{ $revision->created_at->toDateTimeString() }}</td>
               <td>
                 <p>{{ $revision->child_tag_revisions }}</p>
               </td>
@@ -37,12 +35,12 @@
                   @foreach($tag->stories as $i => $item)
                       @php
                       $str = "[#" . $item->pivotal_id . "]";
-                      $str .= isset($projectIds[$item->project_id]) ? $projectIds[$item->project_id] : "";
+                      $str .= isset($projectIds[$item->project_id]) ? "[" . $projectIds[$item->project_id] . "] " : "";
 
-                      $type = $item->story_type == 'feature' ? $item->point . ' points' : $item->story_type;
+                      $type = $item->story_type == 'feature' ? $item->point . ' point(s)' : $item->story_type;
 
                       $str .= "<span class='box ellipsis'>{$item->title}</span>";
-                      $str .= "(". $type .", " . $item->status . ")";
+                      $str .= " (". $type .", " . $item->status . ")";
 
                       $tmp .= $str . "<br>";
                       @endphp
