@@ -32,6 +32,7 @@
             "tests/TestCase.php",
             "tests/routes/BaseRouteTest.php",
             "tests/Lib/BaseLibTest.php",
+            "tests/Models/BaseModelTest.php",
             "tests/Http/Controllers/BaseControllerTest.php"
         ],
         "files": [

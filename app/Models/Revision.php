@@ -23,39 +23,22 @@ class Revision extends Model
      */
     public function tags()
     {
-        return $this->hasMany(Tag::class);
+        return $this->belongsToMany(Tag::class, 'tag_revision', 'revision_id', 'tag_id');
     }
 
     /**
      * method section
      */
     public function syncTags($tagIds = []) {
-        $this->unnatachTags();
-
         if (is_null($tagIds) || count($tagIds) == 0) {
             return;
         }
         $tagIds = array_filter($tagIds, function($c){
             return !empty($c);
         });
-
-        $tags = Tag::whereIn('id', $tagIds)->get();
-        $this->tags()->saveMany($tags);
+        $this->tags()->sync($tagIds);
 
         $this->cached_tags = $this->tags()->get();
-    }
-
-    private function unnatachTags()
-    {
-        $tags = $this->tags()->get();
-        if (! $tags) {
-            return;
-        }
-        $tagIds = $tags->pluck('id')->all();
-        $tags = Tag::whereIn('id', $tagIds)->get();
-        foreach ($tags as $tag) {
-            $tag->revision_id = null;
-            $tag->save();
-        }
+        $this->save();
     }
 }

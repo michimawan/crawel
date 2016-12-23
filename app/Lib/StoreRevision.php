@@ -70,12 +70,7 @@ class StoreRevision
 
     public function createUpperLimit($childTagRev)
     {
-        $parsedGreenTag = StoryHelper::parseJenkinsTag($childTagRev);
-        if (count($parsedGreenTag) == 0) {
-            return '';
-        }
-
-        return Helper::jenkinsToGitTagging($this->workspace, $parsedGreenTag[$childTagRev]['greenTagTiming']);
+        return Helper::jenkinsToGitTagging($this->workspace, $childTagRev);
     }
 
     public function getBottomLimit()
