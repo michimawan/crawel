@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Http\JsonResponse;
+
 use App\Models\Revision;
 use App\Models\Tag;
 use App\Lib\Helper;
@@ -59,5 +61,85 @@ class RevisionsControllerTest extends BaseControllerTest
         $this->assertResponseOk();
         $this->assertEquals('revisions.create', $response->original->getName());
         $this->assertViewHas(['options']);
+    }
+
+    public function test_update()
+    {
+        $revision = factory(Revision::class)->create([
+            'end_time_check_story' => '',
+            'end_time_run_automate_test' => '',
+            'time_get_canary' => '',
+            'time_to_elb' => '',
+            'description' => '',
+        ]);
+        $url = route('revisions.update', ['id' => $revision->id]);
+        $params = [
+            'end_time_check_story' => 'dummy text',
+            'end_time_run_automate_test' => 'dummy text',
+            'time_get_canary' => 'dummy text',
+            'time_to_elb' => 'dummy text',
+            'description' => 'dummy text',
+            'project' => 'dummy text',
+        ];
+        $response = $this->post($url, $params, [
+            'HTTP_X-Requested-With' => 'XMLHttpRequest'
+        ])->response;
+        $this->assertResponseOk();
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $data = $response->getData();
+        $this->assertEquals(true, $data->status);
+    }
+
+    public function test_updateFailedRevisionNotFound()
+    {
+        $url = route('revisions.update', ['id' => rand(100, 1000)]);
+        $params = [
+            'end_time_check_story' => 'dummy text',
+            'end_time_run_automate_test' => 'dummy text',
+            'time_get_canary' => 'dummy text',
+            'time_to_elb' => 'dummy text',
+            'description' => 'dummy text',
+            'project' => 'dummy text',
+        ];
+        $response = $this->post($url, $params, [
+            'HTTP_X-Requested-With' => 'XMLHttpRequest'
+        ])->response;
+        $this->assertResponseOk();
+        $data = $response->getData();
+        $this->assertEquals(false, $data->status);
+    }
+
+    public function test_updateFailedCausedEmptyField()
+    {
+        $url = route('revisions.update', ['id' => rand(100, 1000)]);
+        $params = [
+            'end_time_check_story' => 'dummy text',
+            'end_time_run_automate_test' => '',
+            'time_get_canary' => '',
+            'time_to_elb' => 'dummy text',
+            'description' => 'dummy text',
+            'project' => 'dummy text',
+        ];
+        $response = $this->post($url, $params, [
+            'X-Requested-With' => 'XMLHttpRequest'
+        ])->response;
+        $this->assertResponseOk();
+        $data = $response->getData();
+        $this->assertEquals(false, $data->status);
+    }
+
+    public function test_updateFailedCausedNonAjaxRequest()
+    {
+        $url = route('revisions.update', ['id' => rand(100, 1000)]);
+        $params = [
+            'end_time_check_story' => 'dummy text',
+            'end_time_run_automate_test' => 'dummy text',
+            'time_get_canary' => 'dummy text',
+            'time_to_elb' => 'dummy text',
+            'description' => 'dummy text',
+            'project' => 'dummy text',
+        ];
+        $response = $this->post($url, $params)->response;
+        $this->assertResponseStatus(401);
     }
 }

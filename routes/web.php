@@ -16,6 +16,12 @@ Route::get('/', [
     'uses' => 'RevisionsController@index'
 ]);
 
+Route::post('/revisions/update/{id}', [
+    'middleware' => 'ajax',
+    'as' => 'revisions.update',
+    'uses' => 'RevisionsController@update'
+]);
+
 Route::get('/mails/create', [
     'as' => 'mails.create',
     'uses' => 'MailsController@create'
@@ -32,6 +38,6 @@ Route::get('/auth', [
 ]);
 
 Route::resource('revisions', 'RevisionsController', [
-    'except' => ['show', 'destroy', 'index']
+    'except' => ['update', 'show', 'destroy', 'index']
 ]);
 

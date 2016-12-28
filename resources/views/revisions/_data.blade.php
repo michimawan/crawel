@@ -6,7 +6,6 @@
             <tr>
               <th>Date</th>
               <th>Revision</th>
-              <th>Get Greentag Timing</th>
               <th>Stories</th>
               <th>End Time For Check Story</th>
               <th>End Time For Check Automation</th>
@@ -14,21 +13,19 @@
               <th>Time To Finish Test In Canary</th>
               <th>Time To Finish ELB</th>
               <th>Description</th>
+              <th>Action</th>
             </tr>
         </thead>
         <tbody>
             @foreach($rev as $revision)
-            <tr>
+            <tr data-id={{$revision->id}}>
 
               <?php $number = 1; ?>
-              <td>{{ $revision->created_at->toDateTimeString() }}</td>
-              <td>
+              <td class="date">{{ $revision->created_at->toDateTimeString() }}</td>
+              <td class="child-tag-revisions">
                 <p>{{ $revision->child_tag_revisions }}</p>
               </td>
-              <td>
-                <p>{{ $revision->child_tag_revisions }}</p>
-              </td>
-              <td>
+              <td class="stories">
               @php $storiesString = ""; @endphp
               @foreach($revision->tags as $tag)
                   @php $tmp = ""; @endphp
@@ -49,12 +46,15 @@
               @endforeach
               @php echo $storiesString @endphp
               </td>
-              <td><p>{{ $revision->end_time_check_story }}</p></td>
-              <td><p>{{ $revision->end_time_run_automate_test }}</p></td>
-              <td><p>{{ $revision->time_get_canary }}</p></td>
+              <td class="end-time-check-story"><p>{{ $revision->end_time_check_story }}</p></td>
+              <td class="end-time-run-automate-test"><p>{{ $revision->end_time_run_automate_test }}</p></td>
+              <td class="time-get-canary"><p>{{ $revision->time_get_canary }}</p></td>
               <td><p></p></td>
-              <td><p>{{ $revision->time_to_elb }}</p></td>
-              <td><p>{{ $revision->description }}</p></td>
+              <td class="time-to-elb"><p>{{ $revision->time_to_elb }}</p></td>
+              <td class="description"><p>{{ $revision->description }}</p></td>
+              <td>
+                <button type="button" class="edit-btn btn btn-info btn-sm" data-id={{$revision->id}}>Edit</button>
+              </td>
             </tr>
             @endforeach
         </tbody>

@@ -26,6 +26,19 @@
             margin-right: 6px;
         }
     </style>
+
+    {{ Html::script('js/jquery.min.js') }}
+    {{ Html::script('js/bootstrap.min.js') }}
+    {{ Html::script('js/bootstrap-tour.min.js') }}
+    {{ Html::script('js/jquery-ui.min.js') }}
+    {{ Html::script('js/tour.js') }}
+    <script type="text/javascript">
+      $(function() {
+        $( "#datepicker" ).datepicker({
+          dateFormat: 'yy-mm-dd'
+        });
+      });
+    </script>
 </head>
 <body id="app-layout">
     <nav class="navbar navbar-default navbar-static-top">
@@ -48,17 +61,5 @@
 
     @yield('content')
 
-    {{ Html::script('js/jquery.min.js') }}
-    {{ Html::script('js/bootstrap.min.js') }}
-    {{ Html::script('js/bootstrap-tour.min.js') }}
-    {{ Html::script('js/jquery-ui.min.js') }}
-    {{ Html::script('js/tour.js') }}
-    <script type="text/javascript">
-      $(function() {
-        $( "#datepicker" ).datepicker({
-          dateFormat: 'yy-mm-dd'
-        });
-      });
-    </script>
 </body>
 </html>

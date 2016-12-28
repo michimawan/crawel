@@ -46,7 +46,7 @@ class WebTest extends BaseRouteTest
 
     public function test_revisionsUpdate()
     {
-        $response = $this->call('PUT', '/revisions/1', []);
+        $response = $this->call('POST', '/revisions/update/1', []);
         $this->assertCurrentRouteName('revisions.update');
         $this->assertCurrentRouteAction('RevisionsController@update');
     }

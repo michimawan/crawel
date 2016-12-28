@@ -45,4 +45,12 @@
 </div>
 
 </div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  $('.edit-btn').click(function() {
+    var id = $(this).data('id');
+  });
+});
+</script>
 @endsection

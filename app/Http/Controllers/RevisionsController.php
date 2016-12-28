@@ -3,15 +3,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Response;
 use Redirect;
 use Config;
+use View;
 
+use App\Http\Requests\RevisionUpdateRequest;
 use App\Lib\StoreRevision;
 use App\Lib\RevisionRepository;
-use App\Http\Requests;
+use App\Models\Revision;
 use App\Models\Tag;
 use App\Lib\Helper;
-use View;
 
 class RevisionsController extends Controller
 {
@@ -55,13 +57,16 @@ class RevisionsController extends Controller
         return Redirect::route('revisions.index');
     }
 
-    public function edit($id)
-    {
-        //
-    }
-
     public function update(Request $request, $id)
     {
-        //
+        $rev = Revision::whereId($id)->first();
+        if ($rev) {
+            $rev->fill($request->all());
+            if ($rev->save()) {
+                return Response::json(['status' => true], 200);
+            }
+        }
+
+        return Response::json(['status' => false], 200);
     }
 }
