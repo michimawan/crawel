@@ -63,7 +63,7 @@ class RevisionsController extends Controller
         if ($rev) {
             $rev->fill($request->all());
             if ($rev->save()) {
-                return Response::json(['status' => true], 200);
+                return Response::json(['status' => true, 'datas' => $request->all()], 200);
             }
         }
 

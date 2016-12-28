@@ -18,8 +18,8 @@
         </thead>
         <tbody>
             @foreach($rev as $revision)
-            <tr data-id={{$revision->id}}>
-
+            <tr class="revision--item" data-id={{$revision->id}}>
+              <td class="token hidden" data-id={{$revision->id}}><input type="hidden" name="_token" value="{{{ csrf_token() }}}" /></td>
               <?php $number = 1; ?>
               <td class="date">{{ $revision->created_at->toDateTimeString() }}</td>
               <td class="child-tag-revisions">
@@ -46,12 +46,12 @@
               @endforeach
               @php echo $storiesString @endphp
               </td>
-              <td class="end-time-check-story"><p>{{ $revision->end_time_check_story }}</p></td>
-              <td class="end-time-run-automate-test"><p>{{ $revision->end_time_run_automate_test }}</p></td>
-              <td class="time-get-canary"><p>{{ $revision->time_get_canary }}</p></td>
+              <td class="end-time-check-story" data-id={{$revision->id}}><p>{{ $revision->end_time_check_story }}</p></td>
+              <td class="end-time-run-automate-test" data-id={{$revision->id}}><p>{{ $revision->end_time_run_automate_test }}</p></td>
+              <td class="time-get-canary" data-id={{$revision->id}}><p>{{ $revision->time_get_canary }}</p></td>
               <td><p></p></td>
-              <td class="time-to-elb"><p>{{ $revision->time_to_elb }}</p></td>
-              <td class="description"><p>{{ $revision->description }}</p></td>
+              <td class="time-to-elb" data-id={{$revision->id}}><p>{{ $revision->time_to_elb }}</p></td>
+              <td class="description" data-id={{$revision->id}}><p>{{ $revision->description }}</p></td>
               <td>
                 <button type="button" class="edit-btn btn btn-info btn-sm" data-id={{$revision->id}}>Edit</button>
               </td>
