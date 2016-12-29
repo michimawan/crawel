@@ -63,17 +63,23 @@ $(document).ready(function() {
   }
 
   function changeToForm(id) {
-    var endTimeCheckStoryForm = '<input name="end-time-check-story"/>';
-    var endTimeRunAutomateTest = '<input name="end-time-run-automate-test"/>';
-    var timeGetCanary = '<input name="time-get-canary"/>';
-    var timeToElb = '<input name="time-to-elb"/>';
-    var description = '<input name="description"/>';
+    var endTimeCheckStoryForm = $('.end-time-check-story[data-id=' + id + ']').text();
+    var endTimeRunAutomateTest = $('.end-time-run-automate-test[data-id=' + id + ']').text();
+    var timeGetCanary = $('.time-get-canary[data-id=' + id + ']').text();
+    var timeToElb = $('.time-to-elb[data-id=' + id + ']').text();
+    var description = $('.description[data-id=' + id + ']').text();
 
-    $('.end-time-check-story[data-id=' + id + ']').html(endTimeCheckStoryForm);
-    $('.end-time-run-automate-test[data-id=' + id + ']').html(endTimeRunAutomateTest);
-    $('.time-get-canary[data-id=' + id + ']').html(timeGetCanary);
-    $('.time-to-elb[data-id=' + id + ']').html(timeToElb);
-    $('.description[data-id=' + id + ']').html(description);
+    var endTimeCheckStoryFormStr = '<input name="end-time-check-story" value="'+ endTimeCheckStoryForm +'"/>';
+    var endTimeRunAutomateTestStr = '<input name="end-time-run-automate-test" value="'+ endTimeRunAutomateTest +'"/>';
+    var timeGetCanaryStr = '<input name="time-get-canary" value="'+ timeGetCanary +'"/>';
+    var timeToElbStr = '<input name="time-to-elb" value="'+ timeToElb +'"/>';
+    var descriptionStr= '<input name="description" value="'+ description +'"/>';
+
+    $('.end-time-check-story[data-id=' + id + ']').html(endTimeCheckStoryFormStr);
+    $('.end-time-run-automate-test[data-id=' + id + ']').html(endTimeRunAutomateTestStr);
+    $('.time-get-canary[data-id=' + id + ']').html(timeGetCanaryStr);
+    $('.time-to-elb[data-id=' + id + ']').html(timeToElbStr);
+    $('.description[data-id=' + id + ']').html(descriptionStr);
     $('.edit-btn[data-id=' + id + ']').text('Submit');
     $('.edit-btn[data-id=' + id + ']').removeClass('btn-info');
     $('.edit-btn[data-id=' + id + ']').addClass('btn-success');
