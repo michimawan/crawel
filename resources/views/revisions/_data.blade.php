@@ -21,11 +21,11 @@
             <tr class="revision--item" data-id={{$revision->id}}>
               <td class="token hidden" data-id={{$revision->id}}><input type="hidden" name="_token" value="{{{ csrf_token() }}}" /></td>
               <?php $number = 1; ?>
-              <td class="date">{{ $revision->created_at->toDateTimeString() }}</td>
-              <td class="child-tag-revisions">
+              <td class="date col-md-1">{{ $revision->created_at->toDateTimeString() }}</td>
+              <td class="child-tag-revisions col-md-1">
                 <p>{{ $revision->child_tag_revisions }}</p>
               </td>
-              <td class="stories">
+              <td class="stories col-md-3" data-id={{$revision->id}}>
               @php $storiesString = ""; @endphp
               @foreach($revision->tags as $tag)
                   @php $tmp = ""; @endphp
@@ -46,12 +46,12 @@
               @endforeach
               @php echo $storiesString @endphp
               </td>
-              <td class="end-time-check-story" data-id={{$revision->id}}><p>{{ $revision->end_time_check_story }}</p></td>
-              <td class="end-time-run-automate-test" data-id={{$revision->id}}><p>{{ $revision->end_time_run_automate_test }}</p></td>
-              <td class="time-get-canary" data-id={{$revision->id}}><p>{{ $revision->time_get_canary }}</p></td>
-              <td><p></p></td>
-              <td class="time-to-elb" data-id={{$revision->id}}><p>{{ $revision->time_to_elb }}</p></td>
-              <td class="description" data-id={{$revision->id}}><p>{{ $revision->description }}</p></td>
+              <td class="end-time-check-story col-md-1" data-id={{$revision->id}}><p>{{ $revision->end_time_check_story }}</p></td>
+              <td class="end-time-run-automate-test col-md-1" data-id={{$revision->id}}><p>{{ $revision->end_time_run_automate_test }}</p></td>
+              <td class="time-get-canary col-md-1" data-id={{$revision->id}}><p>{{ $revision->time_get_canary }}</p></td>
+              <td class="col-md-1"><p></p></td>
+              <td class="time-to-elb col-md-1" data-id={{$revision->id}}><p>{{ $revision->time_to_elb }}</p></td>
+              <td class="description col-md-2" data-id={{$revision->id}}><p>{{ $revision->description }}</p></td>
               <td>
                 <button type="button" class="edit-btn btn btn-info btn-sm" data-id={{$revision->id}}>Edit</button>
               </td>

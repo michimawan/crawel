@@ -10,6 +10,7 @@ use View;
 
 use App\Http\Requests\RevisionUpdateRequest;
 use App\Lib\StoreRevision;
+use App\Lib\UpdateTags;
 use App\Lib\RevisionRepository;
 use App\Models\Revision;
 use App\Models\Tag;
@@ -61,6 +62,9 @@ class RevisionsController extends Controller
     {
         $rev = Revision::whereId($id)->first();
         if ($rev) {
+            if (!empty($request->get('stories'))) {
+                (new UpdateTags($rev, $request->get('stories')))->run();
+            }
             $rev->fill($request->all());
             if ($rev->save()) {
                 return Response::json(['status' => true, 'datas' => $request->all()], 200);

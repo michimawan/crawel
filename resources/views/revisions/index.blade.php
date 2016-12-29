@@ -63,18 +63,21 @@ $(document).ready(function() {
   }
 
   function changeToForm(id) {
+    var stories = $('.stories[data-id=' + id + ']').text();
     var endTimeCheckStoryForm = $('.end-time-check-story[data-id=' + id + ']').text();
     var endTimeRunAutomateTest = $('.end-time-run-automate-test[data-id=' + id + ']').text();
     var timeGetCanary = $('.time-get-canary[data-id=' + id + ']').text();
     var timeToElb = $('.time-to-elb[data-id=' + id + ']').text();
     var description = $('.description[data-id=' + id + ']').text();
 
+    var storiesStr = '<textarea name="stories">'+ stories +'</textarea>';
     var endTimeCheckStoryFormStr = '<input name="end-time-check-story" value="'+ endTimeCheckStoryForm +'"/>';
     var endTimeRunAutomateTestStr = '<input name="end-time-run-automate-test" value="'+ endTimeRunAutomateTest +'"/>';
     var timeGetCanaryStr = '<input name="time-get-canary" value="'+ timeGetCanary +'"/>';
     var timeToElbStr = '<input name="time-to-elb" value="'+ timeToElb +'"/>';
     var descriptionStr= '<input name="description" value="'+ description +'"/>';
 
+    $('.stories[data-id=' + id + ']').html(storiesStr);
     $('.end-time-check-story[data-id=' + id + ']').html(endTimeCheckStoryFormStr);
     $('.end-time-run-automate-test[data-id=' + id + ']').html(endTimeRunAutomateTestStr);
     $('.time-get-canary[data-id=' + id + ']').html(timeGetCanaryStr);
@@ -88,6 +91,7 @@ $(document).ready(function() {
   function submitForm(id) {
     var data = {};
 
+    data.stories = $('.stories[data-id=' + id + '] textarea').val();
     data.end_time_check_story = $('.end-time-check-story[data-id=' + id + '] input').val();
     data.end_time_run_automate_test = $('.end-time-run-automate-test[data-id=' + id + '] input').val();
     data.time_get_canary = $('.time-get-canary[data-id=' + id + '] input').val();
@@ -109,6 +113,7 @@ $(document).ready(function() {
   }
 
   function returnToNormal(id, data) {
+    $('.stories[data-id=' + id + ']').html(data.stories);
     $('.end-time-check-story[data-id=' + id + ']').html(data.end_time_check_story);
     $('.end-time-run-automate-test[data-id=' + id + ']').html(data.end_time_run_automate_test);
     $('.time-get-canary[data-id=' + id + ']').html(data.time_get_canary);

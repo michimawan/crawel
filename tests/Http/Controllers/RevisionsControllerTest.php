@@ -74,6 +74,7 @@ class RevisionsControllerTest extends BaseControllerTest
         ]);
         $url = route('revisions.update', ['id' => $revision->id]);
         $params = [
+            'green_tags' => '',
             'end_time_check_story' => 'dummy text',
             'end_time_run_automate_test' => 'dummy text',
             'time_get_canary' => 'dummy text',
@@ -94,6 +95,7 @@ class RevisionsControllerTest extends BaseControllerTest
     {
         $url = route('revisions.update', ['id' => rand(100, 1000)]);
         $params = [
+            'green_tags' => '',
             'end_time_check_story' => 'dummy text',
             'end_time_run_automate_test' => 'dummy text',
             'time_get_canary' => 'dummy text',
@@ -113,6 +115,7 @@ class RevisionsControllerTest extends BaseControllerTest
     {
         $url = route('revisions.update', ['id' => rand(100, 1000)]);
         $params = [
+            'green_tags' => '',
             'end_time_check_story' => 'dummy text',
             'end_time_run_automate_test' => '',
             'time_get_canary' => '',
@@ -132,6 +135,7 @@ class RevisionsControllerTest extends BaseControllerTest
     {
         $url = route('revisions.update', ['id' => rand(100, 1000)]);
         $params = [
+            'green_tags' => '',
             'end_time_check_story' => 'dummy text',
             'end_time_run_automate_test' => 'dummy text',
             'time_get_canary' => 'dummy text',

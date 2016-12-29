@@ -91,7 +91,7 @@ class StoreRevision
         $gitCommand = "{$baseCommand} {$upperLimit}...{$bottomLimit}";
         $gitDirectory = Config::get('pivotal.repo_path')[$this->workspace];
         $gitLog = "";
-        exec("cd {$gitDirectory}; {$gitCommand}", $gitLog);
+        exec("cd {$gitDirectory}; git pull --rebase origin master; {$gitCommand}", $gitLog);
         return str_replace('"', "'", join('\n', $gitLog));
     }
 }
