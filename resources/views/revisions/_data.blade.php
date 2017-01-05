@@ -49,7 +49,7 @@
               <td class="end-time-check-story col-md-1" data-id={{$revision->id}}><p>{{ $revision->end_time_check_story }}</p></td>
               <td class="end-time-run-automate-test col-md-1" data-id={{$revision->id}}><p>{{ $revision->end_time_run_automate_test }}</p></td>
               <td class="time-get-canary col-md-1" data-id={{$revision->id}}><p>{{ $revision->time_get_canary }}</p></td>
-              <td class="col-md-1"><p></p></td>
+              <td class="time-to-finish-test-canary col-md-1" data-id={{$revision->id}}><p>{{ $revision->time_to_finish_test_canary }}</p></td>
               <td class="time-to-elb col-md-1" data-id={{$revision->id}}><p>{{ $revision->time_to_elb }}</p></td>
               <td class="description col-md-2" data-id={{$revision->id}}><p>{{ $revision->description }}</p></td>
               <td>

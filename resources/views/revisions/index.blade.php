@@ -67,6 +67,7 @@ $(document).ready(function() {
     var endTimeCheckStoryForm = $('.end-time-check-story[data-id=' + id + ']').text();
     var endTimeRunAutomateTest = $('.end-time-run-automate-test[data-id=' + id + ']').text();
     var timeGetCanary = $('.time-get-canary[data-id=' + id + ']').text();
+    var timeToFinishTestCanary = $('.time-to-finish-test-canary[data-id=' + id + ']').text();
     var timeToElb = $('.time-to-elb[data-id=' + id + ']').text();
     var description = $('.description[data-id=' + id + ']').text();
 
@@ -74,6 +75,7 @@ $(document).ready(function() {
     var endTimeCheckStoryFormStr = '<input name="end-time-check-story" value="'+ endTimeCheckStoryForm +'"/>';
     var endTimeRunAutomateTestStr = '<input name="end-time-run-automate-test" value="'+ endTimeRunAutomateTest +'"/>';
     var timeGetCanaryStr = '<input name="time-get-canary" value="'+ timeGetCanary +'"/>';
+    var timeToFinishTestCanaryStr = '<input name="time-to-finish-test-canary" value="'+ timeToFinishTestCanary +'"/>';
     var timeToElbStr = '<input name="time-to-elb" value="'+ timeToElb +'"/>';
     var descriptionStr= '<input name="description" value="'+ description +'"/>';
 
@@ -81,6 +83,7 @@ $(document).ready(function() {
     $('.end-time-check-story[data-id=' + id + ']').html(endTimeCheckStoryFormStr);
     $('.end-time-run-automate-test[data-id=' + id + ']').html(endTimeRunAutomateTestStr);
     $('.time-get-canary[data-id=' + id + ']').html(timeGetCanaryStr);
+    $('.time-to-finish-test-canary[data-id=' + id + ']').html(timeToFinishTestCanaryStr);
     $('.time-to-elb[data-id=' + id + ']').html(timeToElbStr);
     $('.description[data-id=' + id + ']').html(descriptionStr);
     $('.edit-btn[data-id=' + id + ']').text('Submit');
@@ -95,6 +98,7 @@ $(document).ready(function() {
     data.end_time_check_story = $('.end-time-check-story[data-id=' + id + '] input').val();
     data.end_time_run_automate_test = $('.end-time-run-automate-test[data-id=' + id + '] input').val();
     data.time_get_canary = $('.time-get-canary[data-id=' + id + '] input').val();
+    data.time_to_finish_test_canary = $('.time-to-finish-test-canary[data-id=' + id + '] input').val();
     data.time_to_elb = $('.time-to-elb[data-id=' + id + '] input').val();
     data.description = $('.description[data-id=' + id + '] input').val();
     data._token = $('.token[data-id=' + id + '] input').val();
@@ -117,6 +121,7 @@ $(document).ready(function() {
     $('.end-time-check-story[data-id=' + id + ']').html(data.end_time_check_story);
     $('.end-time-run-automate-test[data-id=' + id + ']').html(data.end_time_run_automate_test);
     $('.time-get-canary[data-id=' + id + ']').html(data.time_get_canary);
+    $('.time-to-finish-test-canary[data-id=' + id + ']').html(data.time_to_finish_test_canary);
     $('.time-to-elb[data-id=' + id + ']').html(data.time_to_elb);
     $('.description[data-id=' + id + ']').html(data.description);
     $('.edit-btn[data-id=' + id + ']').addClass('btn-info');

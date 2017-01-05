@@ -11,6 +11,7 @@ class Revision extends Model
         'end_time_check_story',
         'end_time_run_automate_test',
         'time_get_canary',
+        'time_to_finish_test_canary',
         'time_to_elb',
         'description',
         'project',
