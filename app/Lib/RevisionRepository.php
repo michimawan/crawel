@@ -6,6 +6,7 @@ use Config;
 
 
 use App\Models\Revision;
+use Exception;
 
 class RevisionRepository
 {
@@ -15,7 +16,18 @@ class RevisionRepository
         $rev->child_tag_revisions = $tagRev;
         $rev->project = $workspace;
 
-        $status = $rev->save();
+        $status = false;
+        try {
+            $status = $rev->save();
+        } catch (Exception $e) {
+            $rev = Revision::whereChildTagRevisions($tagRev)
+                ->whereProject($workspace)
+                ->first();
+
+            if ($rev) {
+                $status = true;
+            }
+        }
         return [$status, $rev];
     }
 

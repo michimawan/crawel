@@ -27,6 +27,10 @@ class TagRepository
             $tag->timing = $greenTag['greenTagTiming'];
             $tag->project = $project;
 
+            if (! isset($greenTag['stories'])) {
+                continue;
+            }
+
             $ids = $this->getStoryIds($project, $greenTag['stories']);
             if (count($ids)) {
                 try {
