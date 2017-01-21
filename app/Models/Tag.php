@@ -23,7 +23,7 @@ class Tag extends Model
 
     public function revisions()
     {
-        return $this->belongsTo(Revision::class);
+        return $this->belongsToMany(Revision::class, 'tag_revision');
     }
 
     /**

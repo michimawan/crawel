@@ -1,33 +1,57 @@
 <?php
 
+use Illuminate\Http\JsonResponse;
+
 use App\Models\Revision;
 use App\Models\Tag;
+use App\Lib\Helper;
 use Carbon\Carbon;
 
 class RevisionsControllerTest extends BaseControllerTest
 {
-    public function xtest_index()
+    public function test_index_get_todays_tag()
     {
         $projects = (new Helper())->reverseProjectIds(Config::get('pivotal.projects'));
 
-        $yesterdayDatas = factory(Tag::class, 3)->create([
+        $yesterdayDatas = factory(Revision::class, 3)->create([
             'project' => 'foo',
             'created_at' => Carbon::now()->subDay()
         ]);
 
-        $todayDatas = factory(Tag::class, 3)->create([
+        $todayDatas = factory(Revision::class, 3)->create([
             'project' => 'foo'
         ]);
-        $tag = (new Helper)->grouping($projects, $todayDatas);
+        $rev = (new Helper)->grouping($projects, $todayDatas);
 
         $route = route('revisions.index');
         $response = $this->get($route, [])->response;
 
         $this->assertResponseOk();
         $this->assertEquals('revisions.index', $response->original->getName());
-        $this->assertViewHas(['tag', 'projects']);
-        $this->assertEquals($tag->pluck('id'), $response->original->tag->pluck('id'));
+        $this->assertViewHas(['rev', 'projects']);
+        $this->assertEquals($rev->pluck('id'), $response->original->rev->pluck('id'));
         $this->assertEquals($projects, $response->original->projects);
+    }
+
+    public function test_index_get_yesterday_rev()
+    {
+        $projects = (new Helper())->reverseProjectIds(Config::get('pivotal.projects'));
+
+        $yesterdayDate = Helper::sanitizeDate(Carbon::today()->subDay()->toDateTimeString(), ' ');
+        $yesterdayDatas = factory(Revision::class, 3)->create([
+            'project' => 'foo'
+        ]);
+
+        $rev = (new Helper)->grouping($projects, $yesterdayDatas);
+
+        $route = route('revisions.index');
+        $response = $this->get($route, [
+            'date' => $yesterdayDate
+        ])->response;
+
+        $this->assertResponseOk();
+        $this->assertEquals('revisions.index', $response->original->getName());
+        $this->assertEquals($rev->pluck('id'), $response->original->rev->pluck('id'));
     }
 
     public function test_create()
@@ -36,42 +60,90 @@ class RevisionsControllerTest extends BaseControllerTest
         $response = $this->get($route, [])->response;
         $this->assertResponseOk();
         $this->assertEquals('revisions.create', $response->original->getName());
-        $this->assertViewHas(['greenTags', 'projects']);
+        $this->assertViewHas(['options']);
     }
 
-    public function test_store_success()
+    public function test_update()
     {
-        $text = ['revisions' => '[#211123] foo', 'project' => 'foo'];
-        $path = route('revisions.store');
-        $response = $this->call('POST', $path, $text);
-        $this->assertEquals(302, $response->getStatusCode());
-        $this->assertRedirectedToRoute('stories.index');
-    }
-
-    public function test_store_failed()
-    {
-        $tag = factory(Tag::class)->create([
-            'project' => 'foo'
+        $revision = factory(Revision::class)->create([
+            'end_time_check_story' => '',
+            'end_time_run_automate_test' => '',
+            'time_get_canary' => '',
+            'time_to_elb' => '',
+            'description' => '',
         ]);
-        $text = [
-            'foo_tags' => $tag->id,
+        $url = route('revisions.update', ['id' => $revision->id]);
+        $params = [
+            'green_tags' => '',
+            'end_time_check_story' => 'dummy text',
+            'end_time_run_automate_test' => 'dummy text',
+            'time_get_canary' => 'dummy text',
+            'time_to_elb' => 'dummy text',
+            'description' => 'dummy text',
+            'project' => 'dummy text',
         ];
-        $path = route('revisions.store');
-        $response = $this->call('POST', $path, $text);
-        $this->assertEquals(302, $response->getStatusCode());
-        $this->assertRedirectedToRoute('revisions.create');
+        $response = $this->post($url, $params, [
+            'HTTP_X-Requested-With' => 'XMLHttpRequest'
+        ])->response;
+        $this->assertResponseOk();
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $data = $response->getData();
+        $this->assertEquals(true, $data->status);
     }
 
-    public function test_store_empty_field()
+    public function test_updateFailedRevisionNotFound()
     {
-        $text = [];
-        $path = route('revisions.store');
-        $revisionCount = Revision::count();
-        $response = $this->call('POST', $path, $text);
-        $this->assertEquals(302, $response->getStatusCode());
-        $this->assertRedirectedToRoute('stories.index');
+        $url = route('revisions.update', ['id' => rand(100, 1000)]);
+        $params = [
+            'green_tags' => '',
+            'end_time_check_story' => 'dummy text',
+            'end_time_run_automate_test' => 'dummy text',
+            'time_get_canary' => 'dummy text',
+            'time_to_elb' => 'dummy text',
+            'description' => 'dummy text',
+            'project' => 'dummy text',
+        ];
+        $response = $this->post($url, $params, [
+            'HTTP_X-Requested-With' => 'XMLHttpRequest'
+        ])->response;
+        $this->assertResponseOk();
+        $data = $response->getData();
+        $this->assertEquals(false, $data->status);
+    }
 
-        // this part make sure that empty field won't add data on DB
-        $this->assertEquals($revisionCount, Revision::count());
+    public function test_updateFailedCausedEmptyField()
+    {
+        $url = route('revisions.update', ['id' => rand(100, 1000)]);
+        $params = [
+            'green_tags' => '',
+            'end_time_check_story' => 'dummy text',
+            'end_time_run_automate_test' => '',
+            'time_get_canary' => '',
+            'time_to_elb' => 'dummy text',
+            'description' => 'dummy text',
+            'project' => 'dummy text',
+        ];
+        $response = $this->post($url, $params, [
+            'X-Requested-With' => 'XMLHttpRequest'
+        ])->response;
+        $this->assertResponseOk();
+        $data = $response->getData();
+        $this->assertEquals(false, $data->status);
+    }
+
+    public function test_updateFailedCausedNonAjaxRequest()
+    {
+        $url = route('revisions.update', ['id' => rand(100, 1000)]);
+        $params = [
+            'green_tags' => '',
+            'end_time_check_story' => 'dummy text',
+            'end_time_run_automate_test' => 'dummy text',
+            'time_get_canary' => 'dummy text',
+            'time_to_elb' => 'dummy text',
+            'description' => 'dummy text',
+            'project' => 'dummy text',
+        ];
+        $response = $this->post($url, $params)->response;
+        $this->assertResponseStatus(401);
     }
 }

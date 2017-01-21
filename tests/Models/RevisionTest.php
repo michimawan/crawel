@@ -22,10 +22,9 @@ class RevisionTest extends BaseModelTest
     public function test_syncTags_when_has_some_tags_before()
     {
         $revision = factory(Revision::class)->create();
-        $oldTags = factory(Tag::class, 2)->create([
-            'revision_id' => $revision->id,
-        ]);
+        $oldTags = factory(Tag::class, 2)->create();
         $oldTagIds = $oldTags->pluck('id')->all();
+        $revision->syncTags($oldTagIds);
 
         $newTags = factory(Tag::class, 2)->create();
         $newTagIds = $newTags->pluck('id')->all();

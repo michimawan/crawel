@@ -38,8 +38,9 @@ class TagRepositoryTest extends BaseLibTest
     {
         $tagCount = Tag::count();
         $tagRepo = new TagRepository();
-        $tagRepo->store('foo', $this->data);
+        $tags = $tagRepo->store('foo', $this->data);
 
+        $this->assertEquals(2, $tags->count());
         $this->assertEquals($tagCount + 2, Tag::count());
         $this->assertEquals(5, Tag::where('code', '#1587')->first()->stories->count());
 
@@ -133,33 +134,5 @@ class TagRepositoryTest extends BaseLibTest
         $data['#1585 (Oct 20, 2016 5:23:39 PM)']['stories'] = $this->stories2->pluck('pivotal_id')->all();
         $tagRepo->store('foo', $data);
         $this->assertEquals(3, Tag::where('code', '#1585')->first()->stories->count());
-    }
-
-    public function test_getByDate_return_expected_greenTag()
-    {
-        $yesterday = Carbon::now()->subDay();
-        $tag = factory(Tag::class)->create([
-            'created_at' => $yesterday,
-        ]);
-        factory(Tag::class)->create();
-        $tagRepo = new TagRepository();
-
-        $yesterdayDate = Helper::sanitizeDate(Carbon::today()->subDay()->toDateTimeString(), ' ');
-        $this->assertEquals(1, $tagRepo->getByDate($yesterdayDate)->count());
-        $this->assertEquals($tag->id, $tagRepo->getByDate($yesterdayDate)->first()->id);
-    }
-
-    public function test_getByDate_when_no_date_send_return_today()
-    {
-        $yesterday = Carbon::now()->subDay();
-        factory(Tag::class)->create([
-            'created_at' => $yesterday,
-        ]);
-        $tag = factory(Tag::class)->create();
-        $tagRepo = new TagRepository();
-
-        $yesterdayDate = Helper::sanitizeDate(Carbon::today()->subDay()->toDateTimeString(), ' ');
-        $this->assertEquals(1, $tagRepo->getByDate()->count());
-        $this->assertEquals($tag->id, $tagRepo->getByDate()->first()->id);
     }
 }

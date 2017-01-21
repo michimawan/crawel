@@ -26,6 +26,19 @@
             margin-right: 6px;
         }
     </style>
+
+    {{ Html::script('js/jquery.min.js') }}
+    {{ Html::script('js/bootstrap.min.js') }}
+    {{ Html::script('js/bootstrap-tour.min.js') }}
+    {{ Html::script('js/jquery-ui.min.js') }}
+    {{ Html::script('js/tour.js') }}
+    <script type="text/javascript">
+      $(function() {
+        $( "#datepicker" ).datepicker({
+          dateFormat: 'yy-mm-dd'
+        });
+      });
+    </script>
 </head>
 <body id="app-layout">
     <nav class="navbar navbar-default navbar-static-top">
@@ -38,7 +51,7 @@
             </div>
             <div class="collapse navbar-collapse" id="app-navbar-collapse">
                 <ul id="create-story-list" class="nav navbar-brand navbar-right">
-                    <a href="{{ route('stories.create') }}">
+                    <a href="{{ route('revisions.create') }}">
                         <button type="button" class="btn btn-success btn-sm">Create Story List</button>
                     </a>
                 </ul>
@@ -48,22 +61,5 @@
 
     @yield('content')
 
-    <!-- JavaScripts -->
-    {{ Html::script('js/jquery.min.js') }}
-    {{ Html::script('js/bootstrap.min.js') }}
-    {{ Html::script('js/bootstrap-tour.min.js') }}
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js" integrity="sha384&#45;I6F5OKECLVtK/BL+8iSLDEHowSAfUo76ZL9+kGAgTRdiByINKJaqTPH/QVNS1VDb" crossorigin="anonymous"></script> -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter&#45;bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384&#45;0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> -->
-    {{-- <script src="{{ elixir('js/app.js') }}"></script> --}}
-    
-    {{ Html::script('js/jquery-ui.min.js') }}
-    {{ Html::script('js/tour.js') }}
-    <script type="text/javascript">
-      $(function() {
-        $( "#datepicker" ).datepicker({
-          dateFormat: 'yy-mm-dd'
-        });
-      });
-    </script>
 </body>
 </html>

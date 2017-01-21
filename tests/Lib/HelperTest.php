@@ -125,4 +125,22 @@ class HelperTest extends BaseLibTest
 
         $this->assertEquals($expected, Helper::getSelectedGreenTags($request));
     }
+
+    public function datas()
+    {
+        return [
+            ['#1 (Des 24, 2015 10:20:46 AM)', 'HIJAU-2015-12-24_10-20-46'],
+            ['#2 (Jan 01, 2013 01:10:00 PM)', 'HIJAU-2013-01-01_13-10-00'],
+            ['#3 (Feb 28, 2018 12:20:46 PM)', 'HIJAU-2018-02-28_12-20-46'],
+            ['#4 (Mar 24, 2015 10:20:46 AM)', 'HIJAU-2015-03-24_10-20-46'],
+        ];
+    }
+
+    /**
+     * @dataProvider datas
+     */
+    public function test_jenkinsToGitTagging($tag, $expected)
+    {
+        $this->assertEquals($expected, Helper::jenkinsToGitTagging('foo', $tag));
+    }
 }

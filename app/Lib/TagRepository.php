@@ -13,18 +13,23 @@ use App\Models\Tag;
 class TagRepository
 {
     /**
-     * @return void
+     * @return Collection stored tags
      *
      * @param string name of selected workspace
      * @param array of formatted Tags
      */
     public function store($project, $tags)
     {
+        $storedTags = collect();
         foreach ($tags as $greenTag) {
             $tag = new Tag;
             $tag->code = $greenTag['greenTagId'];
             $tag->timing = $greenTag['greenTagTiming'];
             $tag->project = $project;
+
+            if (! isset($greenTag['stories'])) {
+                continue;
+            }
 
             $ids = $this->getStoryIds($project, $greenTag['stories']);
             if (count($ids)) {
@@ -36,8 +41,11 @@ class TagRepository
                     Log::info($e->getTraceAsString());
                 }
                 $tag->syncStories($ids);
+                $storedTags->push($tag);
             }
         }
+
+        return $storedTags;
     }
 
     /**
@@ -55,24 +63,5 @@ class TagRepository
         $stories = Story::whereIn('pivotal_id', $pivotalIds)->get();
         $stories = $stories->whereIn('project_id', $validProjectIds);
         return $stories->pluck('id')->all();
-    }
-
-    /**
-     * @return Collection of Tag based on date parameter
-     *
-     * @param string of date, e.g: 2016-01-30
-     */
-    public function getByDate($date = null)
-    {
-        if ($date == null) {
-            $startDate = Carbon::today();
-            $endDate = Carbon::today()->addDay();
-        } else {
-            $date .= ' 00';
-            $startDate = Carbon::createFromFormat('Y-m-d H', $date);
-            $endDate = clone $startDate;
-            $endDate->addDay();
-        }
-        return Tag::where('created_at', '>=', $startDate)->where('created_at', '<=', $endDate)->get();
     }
 }

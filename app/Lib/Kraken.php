@@ -25,7 +25,7 @@ class Kraken
         return '';
     }
 
-    public static function parseGreenTag($text = '')
+    public static function parseGitTag($text = '')
     {
         $pattern = '/\(tag: (?P<tagRev>[a-zA-Z0-9\-_]+)\)/i';
         $matches = [];
@@ -40,7 +40,7 @@ class Kraken
 
         $storyIds = [];
         foreach ($lines as $key => $line) {
-            $greenTags = static::parseGreenTag($line);
+            $greenTags = static::parseGitTag($line);
             if (count($greenTags) && $baseRevision == $greenTags[0]) {
                 break;
             } else {

@@ -97,4 +97,22 @@ class Helper
 
         return $selectedGreenTags;
     }
+
+    public static function jenkinsToGitTagging($workspace, $tag)
+    {
+        $workspace = Config::get('pivotal.repo_prefix')[$workspace];
+        $pattern = '/\((?P<date>[A-Za-z0-9,: ]+)\)/i';
+        $matches = [];
+        $found = preg_match_all($pattern, $tag, $matches);
+        if ($found) {
+            $date = str_replace('Des', 'Dec', $matches['date'][0]);
+            $date = str_replace('Peb', 'Feb', $date);
+
+            $date = Carbon::createFromFormat('M d, Y g:i:s a', $date);
+            $date->setToStringFormat('Y-m-d_H-i-s');
+            $str = "{$workspace}-{$date}";
+            return "{$workspace}-{$date}";
+        }
+        return '';
+    }
 }

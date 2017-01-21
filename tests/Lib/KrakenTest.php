@@ -28,7 +28,7 @@ class KrakenTest extends BaseLibTest
         $this->assertEquals($expected, Kraken::parseRevisionsLog($text));
     }
 
-    public function test_parseGreenTag()
+    public function test_parseGitTag()
     {
         $text = <<<STR
 lalalaa (tag: HIJAU-2014-03-02_14-59-00) [finished #123460] foo was here
@@ -41,7 +41,7 @@ STR;
             'HIJAU-2014-03-02_14-23-00',
         ];
 
-        $this->assertEquals($expected, Kraken::parseGreenTag($text));
+        $this->assertEquals($expected, Kraken::parseGitTag($text));
 
         $text = <<<STR
 hohohoo [finished #123458] foo was here
@@ -49,7 +49,7 @@ uauauau [finished #123457] foo was here
 STR;
         $expected = [];
 
-        $this->assertEquals($expected, Kraken::parseGreenTag($text));
+        $this->assertEquals($expected, Kraken::parseGitTag($text));
     }
 
     public function test_getDeployedStoryIds()

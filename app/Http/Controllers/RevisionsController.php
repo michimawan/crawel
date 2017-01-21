@@ -3,59 +3,74 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Response;
 use Redirect;
 use Config;
+use View;
 
+use App\Http\Requests\RevisionUpdateRequest;
+use App\Lib\StoreRevision;
+use App\Lib\UpdateTags;
 use App\Lib\RevisionRepository;
-use App\Http\Requests;
+use App\Models\Revision;
 use App\Models\Tag;
 use App\Lib\Helper;
-use View;
 
 class RevisionsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $date = $request->input('date') ? $request->input('date') : null;
+
+        $projects = Config::get('pivotal.projects');
+        $projects = (new Helper)->reverseProjectIds($projects);
+        $rev = (new RevisionRepository)->getByDate($date);
+
+        $rev = (new Helper)->grouping($projects, $rev);
+
+        return view('revisions.index', [
+            'rev' => $rev,
+            'projects' => $projects,
+        ]);
     }
 
     public function create()
     {
-        $startDate = Carbon::today()->subDays(7);
-        $endDate = Carbon::today()->addDay();
-        $tag = Tag::where('created_at', '>=', $startDate)->where('created_at', '<=', $endDate)->get();
-        $projects = Config::get('pivotal.projects');
-        $projects = (new Helper)->reverseProjectIds($projects);
-
-        $tag = (new Helper)->grouping($projects, $tag);
-        return View::make('revisions.create', [
-            'greenTags' => $tag,
-            'projects' => $projects,
+        $project = Config::get('pivotal.projects');
+        $option = [];
+        foreach($project as $key => $p) {
+            $option[$key] = $key;
+        }
+        return view('revisions.create', [
+            'options' => $option
         ]);
     }
 
     public function store(Request $request)
     {
-        $properties = (new RevisionRepository)->getProperties($request);
-        $selectedGreenTags = (new Helper)->getSelectedGreenTags($request);
-        $status = (new RevisionRepository)->store($properties, $selectedGreenTags);
-        if ($status) {
-            return Redirect::route('stories.index');
+        $childTagRev = $request->input('child_tag_rev');
+        $workspace = $request->input('workspace');
+        if (is_null($childTagRev) || is_null($workspace)) {
+            return Redirect::route('revisions.index');
         }
-        return Redirect::route('revisions.create');
-    }
+        (new StoreRevision($workspace, $childTagRev))->process();
 
-    public function edit($id)
-    {
-        //
+        return Redirect::route('revisions.index');
     }
 
     public function update(Request $request, $id)
     {
-        //
-    }
+        $rev = Revision::whereId($id)->first();
+        if ($rev) {
+            if (!empty($request->get('stories'))) {
+                (new UpdateTags($rev, $request->get('stories')))->run();
+            }
+            $rev->fill($request->all());
+            if ($rev->save()) {
+                return Response::json(['status' => true, 'datas' => $request->all()], 200);
+            }
+        }
 
-    public function destroy($id)
-    {
-        //
+        return Response::json(['status' => false], 200);
     }
 }

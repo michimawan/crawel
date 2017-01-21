@@ -5,7 +5,7 @@
 <div class="container">
 <div class="row">
 {!! Form::open([
-  'route' => 'stories.index',
+  'route' => 'revisions.index',
   'method' => 'GET',
   'class' => '']) !!}
 {!! Form::text('date', '', ['class' => 'btn-small', 'id' => 'datepicker']) !!}

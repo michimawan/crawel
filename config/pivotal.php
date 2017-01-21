@@ -16,5 +16,17 @@ return [
 			'bar-5' => 3212222,
 		],
 	],
+	'repo_prefix' => [
+		'foo' => 'HIJAU',
+		'bar' => 'HELLO',
+	],
+	'repo_path' => [
+		'foo' => '~/this_repository/',
+		'bar' => '',
+	],
+	'source-revision' => [
+		'foo' => 'www.google.com',
+		'bar' => '',
+	],
 	'apiToken' => ''
 ];

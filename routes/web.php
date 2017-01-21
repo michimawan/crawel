@@ -12,23 +12,14 @@
  */
 
 Route::get('/', [
-    'as' => 'stories.index',
-    'uses' => 'StoriesController@index'
+    'as' => 'revisions.index',
+    'uses' => 'RevisionsController@index'
 ]);
 
-Route::get('/stories/create', [
-    'as' => 'stories.create',
-    'uses' => 'StoriesController@create'
-]);
-
-Route::post('/stories/store', [
-    'as' => 'stories.store',
-    'uses' => 'StoriesController@store'
-]);
-
-Route::get('/stories/edit', [
-    'as' => 'stories.edit',
-    'uses' => 'StoriesController@edit'
+Route::post('/revisions/update/{id}', [
+    'middleware' => 'ajax',
+    'as' => 'revisions.update',
+    'uses' => 'RevisionsController@update'
 ]);
 
 Route::get('/mails/create', [
@@ -41,12 +32,12 @@ Route::post('/mails/send', [
     'uses' => 'MailsController@send'
 ]);
 
-
 Route::get('/auth', [
     'as' => 'mails.oauth',
     'uses' => 'MailsController@auth'
 ]);
 
 Route::resource('revisions', 'RevisionsController', [
-    'except' => ['show']
+    'except' => ['update', 'show', 'destroy', 'index']
 ]);
+

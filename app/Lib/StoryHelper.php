@@ -21,7 +21,7 @@ class StoryHelper
      */
     public static function parseText(string $text)
     {
-        $greenTags = self::parseGreenTag($text);
+        $greenTags = self::parseGitTags($text);
         $greenTags = self::addStoriesToGreenTag($greenTags, $text);
 
         $storyIds = self::parse($text);
@@ -58,7 +58,7 @@ class StoryHelper
      * example match pattern
      * #1587 (Oct 20, 2016 5:23:39 PM)
      */
-    public static function parseGreenTag(string $text = '')
+    public static function parseJenkinsTag(string $text = '')
     {
         $pattern = '/(?P<green_tag_timing>(?P<green_tag_id>#(\d+)) \((?P<timing>[A-Za-z0-9,: ]+)\))/i';
 
@@ -77,30 +77,75 @@ class StoryHelper
         return $greenTag;
     }
 
+    public static function parseGitTags(string $text = '')
+    {
+        $pattern = '/(?P<green_tag_timing>tag: [a-zA-Z-]+(?P<timing>[a-zA-Z0-9_-]+))/i';
+
+        $matches = [];
+        $greenTag = [];
+        $found = preg_match_all($pattern, $text, $matches);
+        if ($found) {
+            foreach($matches['green_tag_timing'] as $idx => $match) {
+                $greenTag[$match] = [
+                    'greenTagId' => $matches['green_tag_timing'][$idx],
+                    'greenTagTiming' => $matches['timing'][$idx],
+                ];
+            }
+        }
+
+        return $greenTag;
+    }
+
+    public static function parseGitTag($text = '')
+    {
+        $pattern = '/(?P<green_tag_timing>tag: [a-zA-Z-]+(?P<timing>[a-zA-Z0-9_-]+))/i';
+        $matches = [];
+        $found = preg_match_all($pattern, $text, $matches);
+        return [$found, $matches];
+    }
+
     /**
      * @return array of greenTags that has storyIds as array in it
      *
      * @param array of greenTags that has not have index 'stories'
-     * @param string of raw text from jenkins CI
+     * @param string of raw text from git log
      */
     public static function addStoriesToGreenTag($greenTags = [], $text = '')
     {
-        $lines = preg_split("/\\r\\n|\\r|\\n/", $text);
+        $pattern = '/\\r\\n|\\r|\\n/i';
+        $regexLines = preg_split($pattern, $text);
+        $explodeLines = explode('\n', str_replace(['\r\n', '\r'], '\n', $text));
+
+        if (count($regexLines) >= count($explodeLines)) {
+            $lines = $regexLines;
+        } elseif(count($regexLines) < count($explodeLines)) {
+            $lines = $explodeLines;
+        }
         $greenTagsString = array_keys($greenTags);
 
         $lineCount = count($lines);
         for ($i=0; $i < $lineCount ; $i++) {
             $stories = [];
-            if (in_array($lines[$i], $greenTagsString)) {
-                $j = $i + 1;
-                while( $j < $lineCount && ! in_array($lines[$j], $greenTagsString)) {
+            list($foundI, $matchesI) = static::parseGitTag($lines[$i]);
+            if ($foundI) {
+                $j = $i;
+                $foundJ = true;
+                do {
                     $ids = static::parse($lines[$j]);
                     if (count($ids)) {
                         $stories = array_merge($stories, $ids);
                     }
                     $j++;
+                    if ($j < $lineCount) {
+                        list($foundJ, $matchesJ) = static::parseGitTag($lines[$j]);
+                    }
+                } while( $j < $lineCount && !$foundJ);
+
+                if (count($stories) == 0) {
+                    unset($greenTags[$matchesI['green_tag_timing'][0]]);
+                } else {
+                    $greenTags[$matchesI['green_tag_timing'][0]]['stories'] = $stories;
                 }
-                $greenTags[$lines[$i]]['stories'] = $stories;
                 $i = $j - 1;
             }
         }
