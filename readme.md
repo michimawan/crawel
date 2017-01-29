@@ -4,11 +4,10 @@ Pivotal Crawler is a web application for get pivotal id from CI and push to goog
 
 ## Setup
 ### General Setup
-- if you run this on PHP7, no need to change any file, but when it run on PHP5, don't forget to remove the type hinting on `app\Lib`
-- do `composer install`
+- install virtualbox and vagrant, make sure vagrant and virtual box are compatible.
+- after cloning this repo, do vagrant up, it will install all the needs for this repo to run
 - then change the permission on storage and bootstrap
-- setup the database that will be used on `.env`
-- do `php artisan migrate` to create the table
+- add ssh-key vagrant box to your github account, this needed to do auto pull --rebase on the cron
 
 ### Setup Pivotal
 - enter your apiKey from pivotal tracker to `config/pivotal.php`

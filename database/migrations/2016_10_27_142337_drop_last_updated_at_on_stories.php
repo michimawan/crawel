@@ -18,6 +18,5 @@ class DropLastUpdatedAtOnStories extends Migration
         Schema::table('stories', function($table) {
           $table->json('last_updated_at');
         });
-        // DB::statement('ALTER TABLE stories MODIFY last_updated_at json');
     }
 }

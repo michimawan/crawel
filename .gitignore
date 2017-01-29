@@ -2,6 +2,8 @@
 /public/storage
 /vendor
 /.idea
+/.vagrant
 Homestead.json
 Homestead.yaml
 .env
+vm_build.log
