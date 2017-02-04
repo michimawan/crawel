@@ -7,6 +7,7 @@
               <th>Date</th>
               <th>Revision</th>
               <th>Stories</th>
+              <th>Time To Check Story</th>
               <th>End Time For Check Story</th>
               <th>End Time For Check Automation</th>
               <th>Time To Get Canary</th>
@@ -46,6 +47,7 @@
               @endforeach
               @php echo $storiesString @endphp
               </td>
+              <td class="time-to-check-story col-md-1" data-id={{$revision->id}}><p>{{ $revision->time_to_check_story }}</p></td>
               <td class="end-time-check-story col-md-1" data-id={{$revision->id}}><p>{{ $revision->end_time_check_story }}</p></td>
               <td class="end-time-run-automate-test col-md-1" data-id={{$revision->id}}><p>{{ $revision->end_time_run_automate_test }}</p></td>
               <td class="time-get-canary col-md-1" data-id={{$revision->id}}><p>{{ $revision->time_get_canary }}</p></td>

@@ -75,9 +75,11 @@ class RevisionsControllerTest extends BaseControllerTest
         $url = route('revisions.update', ['id' => $revision->id]);
         $params = [
             'green_tags' => '',
+            'time_to_check_story' => 'dummy text',
             'end_time_check_story' => 'dummy text',
             'end_time_run_automate_test' => 'dummy text',
             'time_get_canary' => 'dummy text',
+            'time_to_finish_test_canary' => 'dummy text',
             'time_to_elb' => 'dummy text',
             'description' => 'dummy text',
             'project' => 'dummy text',

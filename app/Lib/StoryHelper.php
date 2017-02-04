@@ -191,10 +191,11 @@ class StoryHelper
                 $strRev .= static::stringifyStory($projectName, $stories);
 
                 $str .= $strRev . "\n ";
+                $str .= "Time To Check Stories: {$revision->time_to_check_story}\n";
                 $str .= "End Time To Check Stories: {$revision->end_time_check_story}\n";
                 $str .= "End Time To Run Automate Test: {$revision->end_time_run_automate_test}\n";
                 $str .= "Time Get Canary: {$revision->time_get_canary}\n";
-                $str .= "End Time To Test Canary: {$revision->time_get_canary}\n";
+                $str .= "End Time To Test Canary: {$revision->time_to_finish_test_canary}\n";
                 $str .= "End Time To ELB : {$revision->time_to_elb}\n";
                 $str .= "Description: {$revision->description}\n";
             }

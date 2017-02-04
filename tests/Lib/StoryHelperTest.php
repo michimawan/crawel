@@ -353,6 +353,7 @@ STRING;
             }
             // put here for other child tag rev properties
             $revisionString .= $storiesString . "\n ";
+            $revisionString .= "Time To Check Stories: {$revision->time_to_check_story}\n";
             $revisionString .= "End Time To Check Stories: {$revision->end_time_check_story}\n";
             $revisionString .= "End Time To Run Automate Test: {$revision->end_time_run_automate_test}\n";
             $revisionString .= "Time Get Canary: {$revision->time_get_canary}\n";

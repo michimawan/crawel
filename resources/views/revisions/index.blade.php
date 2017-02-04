@@ -95,6 +95,7 @@ $(document).ready(function() {
     var data = {};
 
     data.stories = $('.stories[data-id=' + id + '] textarea').val();
+    data.time_to_check_story = $('.time-to-check-story[data-id=' + id + '] input').val();
     data.end_time_check_story = $('.end-time-check-story[data-id=' + id + '] input').val();
     data.end_time_run_automate_test = $('.end-time-run-automate-test[data-id=' + id + '] input').val();
     data.time_get_canary = $('.time-get-canary[data-id=' + id + '] input').val();
@@ -118,6 +119,7 @@ $(document).ready(function() {
 
   function returnToNormal(id, data) {
     $('.stories[data-id=' + id + ']').html(data.stories);
+    $('.time-to-check-story[data-id=' + id + ']').html(data.time_to_check_story);
     $('.end-time-check-story[data-id=' + id + ']').html(data.end_time_check_story);
     $('.end-time-run-automate-test[data-id=' + id + ']').html(data.end_time_run_automate_test);
     $('.time-get-canary[data-id=' + id + ']').html(data.time_get_canary);

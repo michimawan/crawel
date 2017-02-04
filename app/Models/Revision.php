@@ -8,6 +8,7 @@ class Revision extends Model
 {
     protected $fillable = [
         'child_tag_revisions',
+        'time_to_check_story',
         'end_time_check_story',
         'end_time_run_automate_test',
         'time_get_canary',

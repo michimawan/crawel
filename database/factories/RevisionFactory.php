@@ -16,9 +16,11 @@ $factory->define(App\Models\Revision::class, function (Faker\Generator $faker) {
     $rand = rand(0, 1000);
     return [
         'child_tag_revisions' => $rand . Carbon::now()->toDateTimeString(),
+        'time_to_check_story' => Carbon::now()->toDateTimeString(),
         'end_time_check_story' => Carbon::now()->toDateTimeString(),
         'end_time_run_automate_test' => Carbon::now()->toDateTimeString(),
         'time_get_canary' => Carbon::now()->toDateTimeString(),
+        'time_to_finish_test_canary' => Carbon::now()->toDateTimeString(),
         'time_to_elb' => Carbon::now()->toDateTimeString(),
         'description' => $faker->text,
         'project' => $faker->word,
